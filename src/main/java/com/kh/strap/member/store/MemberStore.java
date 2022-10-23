@@ -21,4 +21,16 @@ public interface MemberStore {
 
 	int idEmailCheck(SqlSession session, Member member);
 
+	int changePwd(SqlSession session, Member member);
+
+	int kakaoMembercheck(SqlSession session, String memberId);
+
+	Member memberById(SqlSession session, String memberId);
+
+	int insertSocialMember(SqlSession session, Member member);
+
+	String memberPwdById(SqlSession session, String memberId);
+
+	int memberNickCheck(SqlSession session, String memberNick);
+
 }

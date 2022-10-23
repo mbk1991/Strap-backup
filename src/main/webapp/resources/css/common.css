@@ -8,7 +8,7 @@ div{
 
 /* 리스트 왼쪽 테두리 */
 li {
-	border-left: 2px solid #c0c0c0;
+/* 	border-left: 2px solid #c0c0c0; */
 }
 
 li:first-child {
@@ -20,16 +20,21 @@ li:first-child {
 body{
 	
 }
+.wrap.container{
+	width: 100%;
+}
 
 /* wrap: 헤더,컨텐츠,푸터를 감싸는 div */
 .wrap{
-	min-width: 1200px;
+	min-width: 1500px;
+	max-width: 100%;
 }
 
 /* 헤더 */
 header {
 	width:100%;
-	height: 200px;
+	height: 150px;
+	padding : 0 100px;
 }
 	.logo {
 		display:inline-block;
@@ -39,27 +44,26 @@ header {
 		vertical-align: middle;
 		font-size: 60px;
 		font-weight: bolder;
-		padding: 50px 30px;
+		padding: 0px 30px;
 	}
 	.login-wrap{
 		position:relative;
 		bottom: 150px;
 		display:inline-block;
 		float:right;
-		width: 400px;
+		width: 600px;
 		height:0%;
 		text-align:right;
+		padding-right: 100px;
 	}
 		.login-wrap li {
 			padding: 15px;
-			font-size: 20px;
+			font-size: 15px;
 			font-weight: bold;
 			list-style: none;
 			display: inline-block;
 		}
 			.text-menu{
-			}
-			.icon-menu{
 			}
 				.menu-img{
 					display:inline-block;
@@ -68,23 +72,25 @@ header {
 					height: 60px;
 				}
 				.icon-img{
-					width: 50px;
-					height: 50px;
+					width: 30px;
+					height: 30px;
 				}
 
 /* 메뉴바 */
-menu{
+nav{
 	width:100%;
-	text-align:center;
-	border-top: 2px solid #c0c0c0;
-	border-bottom: 2px solid #c0c0c0;
+	text-align: center;
 }
 	.navBar{
 		display:inline-block;
 		width:600px;
+		padding:0;
+	}
+	.navBar ul{
+		margin:0;
 	}
 	.navBar li{
-			padding: 20px 60px;
+			padding: 5px 60px;
 			font-size: 20px;
 			font-weight: bold;
 			list-style: none;
@@ -95,57 +101,72 @@ menu{
 		}
 
 /* 컨텐츠 */
+.contents.row{
+	padding:0 200px;
+}
 
 .contents{
-	padding: 0px 50px;
+/* 	padding: 0px 50px; */
+/* 	padding-left: 0; */
 }
 	#contents-wrap{
-		height: 500px;
+/* 		height: 500px; */
 	}
 /* 	사이드바 사용 시  */
 	.sideBar{
-		float:left;
 		width: 20%;
-		padding:12px;
-		font-size:large;
-		
-		border-right: 2px solid #c0c0c0;
-		height: 500px;
+		padding:0;
+		font-size:18px;
 	}
+	.stickySidebar{
+/* 		position:fixed; */
+		width:20%;
+		border-right: 2px solid #c0c0c0;
+		
+	}
+	.sidebarArea{
+		width:20%
+	}
+	
 		.list-group li:first-child{
-			font-size:1.4em;
+			font-size:20px;
 			font-weight:bold;
-			border-bottom: 2px solid #c0c0c0;
 			height:15%;
 		}
 		.sideBar-list{
 			border-style: none;
-			padding: 10%;
+			padding: 3%;
 		}
 	
 	.contents-side{
-		float:left;
 		width: 80%;
 		padding:12px;
 		
-		height: 500px;
 	}
+		#inner-header,#inner-contents{
+			width:70%;
+			margin: 20px auto;
+		}
 /* 사이드바 미 사용 시 */
 	.contents-noside{
 		width: 100%;
 		padding:12px;
 		
-		height: 500px;
 	}
+
+#detail-wrap{
+/* 	width:80%; */
+}
 	
 footer{
 	padding:12px;
 	margin-top:10px;
-	border-top: 2px solid #c0c0c0;
 	height: 200px;
+	background-color: lightgray;
 }
 	#footer-info{
 		width:80%;
-		margin: 10px auto;
+		text-align: center;
+		margin: 0 auto;
 	}
 

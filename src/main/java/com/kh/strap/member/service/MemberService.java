@@ -19,4 +19,17 @@ public interface MemberService {
 
 	int idEmailCheck(Member member);
 
+	int changePwd(Member member);
+
+	int kakaoMembercheck(String memberId);
+
+	Member memberById(String memberId);
+
+	int insertSocialMember(Member Member);
+
+	String memberPwdById(String memberId);
+
+	int memberNickCheck(String memberNick);
+
+
 }

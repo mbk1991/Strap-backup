@@ -47,6 +47,7 @@ public class Search {
 	}
 
 	public void setSearchColumn(String searchColumn) {
+		
 		this.searchColumn = searchColumn;
 	}
 
@@ -75,10 +76,14 @@ public class Search {
 	}
 
 	public Date getStartDate() {
+
 		return startDate;
 	}
 
 	public void setStartDate(Date startDate) {
+//		if(startDate == null) {
+//			startDate =  java.sql.Date .valueOf("999-03-06");
+//		}
 		this.startDate = startDate;
 	}
 
@@ -87,6 +92,9 @@ public class Search {
 	}
 
 	public void setEndDate(Date endDate) {
+//		if(endDate == null) {
+//			endDate = new Date(System.currentTimeMillis());
+//		}
 		this.endDate = endDate;
 	}
 

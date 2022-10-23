@@ -10,6 +10,7 @@ import com.kh.strap.common.Paging;
 import com.kh.strap.common.Search;
 import com.kh.strap.shop.product.domain.Order;
 import com.kh.strap.shop.product.domain.Product;
+import com.kh.strap.shop.product.domain.ProductImg;
 import com.kh.strap.shop.product.domain.ProductLike;
 import com.kh.strap.shop.product.service.ProductService;
 import com.kh.strap.shop.product.store.ProductStore;
@@ -21,10 +22,21 @@ public class ProductServiceImpl implements ProductService {
 	ProductStore pStore;
 	@Autowired
 	SqlSession session;
+	
+//상품 등록
 	@Override
 	public int registerProduct(Product product) {
 		return pStore.insertProduct(session, product);
 	}
+	@Override
+	public int registerSubImg(ProductImg pi) {
+		return pStore.insertSubImg(session, pi);
+	}
+	@Override
+	public int registerInfoImg(ProductImg pi) {
+		return pStore.insertInfoImg(session,pi);
+	}
+//쇼핑몰 상품목록 조회	
 	@Override
 	public List<Product> printAllProduct(Paging paging, Search search) {
 		return pStore.selectAllProduct(session, paging, search);
@@ -34,41 +46,87 @@ public class ProductServiceImpl implements ProductService {
 		return pStore.selectAllProductSearch(session, paging, search);
 	}
 	@Override
+	public int countAllProduct() {
+		return pStore.selectCountAllProduct(session);
+	}
+	@Override
+	public int countSearchProduct(Search search) {
+		return pStore.selectCountSearchProduct(session, search);
+	}
+//관리자 상품목록 조회
+	@Override
+	public List<Product> printAdminAllProduct(Paging paging, Search search) {
+		return pStore.selectAdminAllProduct(session, paging, search);
+	}
+	@Override
+	public List<Product> printAdminProductSearch(Paging paging, Search search) {
+		return pStore.selectAdminProductSearch(session, paging, search);
+	}
+	@Override
+	public int countAdminProductSearch(Search search) {
+		return pStore.selectCountAdminProductSearch(session, search);
+	}
+
+//주문별 상품목록 조회
+	@Override
+	public List<Product> printProductsOnOrder(int orderNo) {
+		return pStore.selectProductsOnOrder(session, orderNo);
+	}
+
+	
+//상품 상세 조회
+	@Override
 	public Product printOneProduct(Product product) {
 		return pStore.selectOneProduct(session, product);
 	}
 	@Override
+	public List<ProductImg> printInfoImgByNo(Product product) {
+		return pStore.selectInfoImgByNo(session, product);
+	}
+	@Override
+	public List<ProductImg> printSubImgByNo(Product product) {
+		return pStore.selectSubImgByNo(session, product);
+	}
+//관리자 상품 수정
+	@Override
 	public int modifyProduct(Product product) {
 		return pStore.updateProduct(session, product);
 	}
-	@Override
-	public int modifyProductGradeSum(Review review) {
-		return pStore.updateProductGradeSum(session, review);
-	}
-//	@Override
-//	public int modifyProductGradeAver(Product product) {
-//		return pStore.updateProductGradeAver(session, product);
-//	}
+//관리자 상품 삭제
 	@Override
 	public int removeProduct(Product product) {
 		return pStore.deleteProduct(session, product);
 	}
+//주문 등록
 	@Override
 	public int registerOrder(Order order) {
 		return pStore.insertOrder(session, order);
 	}
+//주문 조회
 	@Override
 	public Order printOneOrder(Order order) {
 		return pStore.selectOneOrder(session, order);
 	}
 	@Override
-	public List<Order> printMemberOrder(Paging paging, Search search, Order order) {
-		return pStore.selectMemberOrder(session, paging, search, order);
+	public List<Order> printMemberOrder(Paging paging, Search search) {
+		return pStore.selectMemberOrder(session, paging, search);
 	}
 	@Override
-	public List<Order> printMemberCancelOrder(Paging paging, Search search, Order order) {
-		return pStore.selectMemberCancelOrder(session, paging, search, order);
+	public int countMemberOder(Search search) {
+		return pStore.selectCountMemberOrder(session, search);
 	}
+	@Override
+	public List<Order> printMemberCancelOrder(Paging paging, Search search) {
+		return pStore.selectMemberCancelOrder(session, paging, search);
+	}
+	@Override
+	public int countMemberCancelOrder(Search search) {
+		return pStore.selectCountMemberCancelOrder(session, search);
+	}
+
+	
+	
+//주문 수정
 	@Override
 	public int modifyPayCompleteOrder(Order order) {
 		return pStore.updatePayCompleteOrder(session, order);
@@ -85,10 +143,7 @@ public class ProductServiceImpl implements ProductService {
 	public int modifyCancelOrder(Order order) {
 		return pStore.updateCancelOrder(session, order);
 	}
-//	@Override
-//	public int modifyBackOrder(Order order) {
-//		return pStore.updateBackOrder(session, order);
-//	}
+//찜 추가
 	@Override
 	public int registerProductLike(ProductLike like) {
 		return pStore.insertProductLike(session, like);
@@ -105,6 +160,12 @@ public class ProductServiceImpl implements ProductService {
 	public int removeProductLike(ProductLike like) {
 		return pStore.deleteProductLike(session, like);
 	}
+
+
+
+
+
+
 
 
 

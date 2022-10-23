@@ -4,9 +4,47 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
   
 <mapper namespace="NoteBoxMapper">
-<!-- 	<resultMap type= "NoteBox" id=""> -->
-<!-- 		<id property="" column=""/> -->
-<!-- 		<result property="" column=""/> -->
-<!-- 		<result property="" column=""/> -->
-<!-- 	</resultMap> -->
+	<resultMap type= "NoteBox" id="noteBoxResultMap">
+		<id property="noteNo" column="NOTE_NO"/>
+		<result property="recipientId" column="RECIPIENT_ID"/>
+		<result property="senderId" column="SENDER_ID"/>
+		<result property="senderTime" column="SENDER_TIME"/>
+		<result property="noteTitle" column="NOTE_TITLE"/>
+		<result property="noteContents" column="NOTE_CONTENTS"/>
+		<result property="noteAccept" column="NOTE_ACCEPT"/>
+		<result property="matchDate" column="MATCH_DATE"/>
+		<result property="matchTime" column="MEET_TIME"/>
+		<result property="noteStatus" column="NOTE_STATUS"/>
+		<result property="recipientNick" column="RECIPIENT_NICK"/>
+		<result property="senderNick" column="SENDER_NICK"/>
+	</resultMap>
+	<select id="selectAllNoteBox" resultMap="noteBoxResultMap">
+		SELECT NOTE_NO, RECIPIENT_ID, SENDER_ID, SENDER_TIME, NOTE_TITLE, NOTE_CONTENTS, NOTE_ACCEPT, MATCH_DATE, MATCH_TIME, NOTE_STATUS, RECIPIENT_NICK, SENDER_NICK FROM NOTEBOX_TBL N
+		LEFT OUTER JOIN REPORT_TBL R ON N.NOTE_NO = R.CONTENTS_NO WHERE (REPORT_PROCESS IS NULL AND RECIPIENT_ID = #{memberId}) OR NOTE_ACCEPT = 'Y' ORDER BY NOTE_NO DESC
+  	</select>
+	<select id="selectTotalCount" resultType="_int">
+  		SELECT COUNT(*) FROM NOTEBOX_TBL
+  		<where>
+			<if test="searchCondition.toString() == 'title'">
+				SENDER_NICK LIKE '%'||#{searchValue}||'%'
+			</if>
+			<if test="searchCondition.toString() == 'title'">
+				NOTE_TITLE LIKE '%'||#{searchValue}||'%'
+			</if>
+			<if test="searchCondition.toString() == 'contents'">
+				NOTE_CONTENTS LIKE '%'||#{searchValue}||'%'
+			</if>
+			<if test="searchCondition.toString() == 'all'">
+				NOTE_TITLE LIKE '%'||#{searchValue}||'%'
+				OR NOTE_CONTENTS LIKE '%'||#{searchValue}||'%'
+				OR SENDER_NICK LIKE '%'||#{searchValue}||'%'
+			</if>
+		</where>
+  	</select>
+  	<select id="selectOneByNo" resultMap="noteBoxResultMap">
+  		SELECT * FROM NOTEBOX_TBL WHERE NOTE_NO = #{noteNo}
+  	</select>
+	<update id="updateNoteBox">
+		UPDATE NOTEBOX_TBL SET NOTE_ACCEPT = 'Y' WHERE NOTE_NO = #{noteNo}
+	</update>
 </mapper>

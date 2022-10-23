@@ -5,12 +5,29 @@
 <head>
 <meta charset="UTF-8">
 <title>스트랩 : 아이디 찾기</title>
-<script src="/resources/js/jquery-3.6.1.min.js"></script>
+<!-- CDN -->
+<!-- 부트스트랩 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" />
+<!-- jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- css -->
+<link rel="stylesheet" type="text/css" href="/resources/css/common.css">
 	<style>
 		.findIdForm{
-			margin:auto;
+			margin:100px auto;
 			text-align: center;
-			width: 500px;
+			width: 400px;
+			height: 400px;
+			border: 1px solid gray;
+			border-radius: 10px;
+			box-shadow: 5px 5px 5px 5px gray;
+		}
+		.findIdForm button,.findIdForm input{
+			width: 250px;
+			height: 40px;
+		}
+		.findIdForm label{
+			margin-right : 200px;
 		}
 		span.email, #certificationNumber{
 			display:none;
@@ -25,16 +42,16 @@
 <body>
 	<div class="findIdForm">
 		<form action="/member/findIdResult.strap" method="post">
+			<br>
 			<h3>아이디 찾기</h3>
 			<hr>
 			<label for="memberEmail">이메일</label><br>
-			<input type="email" id="memberEmail" name="memberEmail" placeholder="이메일"><br>
+			<input type="email" id="memberEmail" name="memberEmail" placeholder="이메일 입력"><br>
 			<span class="email error">이메일 주소를 다시 확인해주세요</span>
-			<input type="text" id="certificationNumber" name="certificationNumber" placeholder="인증번호"><br>
-			<button type="button" id="certificationBtn">인증요청</button><br><br>
-			<button type="submit" id="findIdBtn" onclick="return numberCheck();" disabled="disabled">아이디 찾기</button>
-		</form>	
-				
+			<input type="text" id="certificationNumber" name="certificationNumber" placeholder="인증번호 입력"><br><br>
+			<button type="button" id="certificationBtn" class="btn btn-primary">인증요청</button><br><br>
+			<button type="submit" id="findIdBtn" onclick="return numberCheck();" class="btn btn-primary" disabled="disabled">아이디 찾기</button>
+		</form>		
 	</div>
 	
 	<script>
@@ -59,6 +76,7 @@
 					type:"get",
 					data:{"memberEmail":memberEmail},
 					success:function(result){
+						console.log(result)
 						if(result.send=="ok"){
 							$("#certificationNumber").show();
 							$("#findIdBtn").removeAttr("disabled");
@@ -68,8 +86,13 @@
 						}else{
 							window.alert("해당 이메일로 가입한 아이디가 없습니다");
 						}
+					},
+					error:function(result){
+						console.log(result)
 					}
 				});
+				}else{
+					window.alert("이메일을 입력해주세요")
 				}
 			
 		})

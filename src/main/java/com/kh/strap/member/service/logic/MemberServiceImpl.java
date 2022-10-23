@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import com.kh.strap.member.domain.Member;
 import com.kh.strap.member.service.MemberService;
 import com.kh.strap.member.store.MemberStore;
-import com.kh.strap.member.store.logic.MemberStoreLogic;
 
 
 @Service
@@ -43,11 +42,6 @@ public class MemberServiceImpl implements MemberService {
 		return reulst;
 	}
 
-//	@Override
-//	public List<String> findIdByEmail(String memberEmail) {
-//		List<String> sList = mStore.findIdByEmail(session, memberEmail);
-//		return sList;
-//	}
 	@Override
 	public List<Member> findIdByEmail(String memberEmail) {
 		List<Member> sList = mStore.findIdByEmail(session, memberEmail);
@@ -59,6 +53,43 @@ public class MemberServiceImpl implements MemberService {
 		int result = mStore.idEmailCheck(session, member);
 		return result;
 	}
+
+	@Override
+	public int changePwd(Member member) {
+		int result = mStore.changePwd(session, member);
+		return result;
+	}
+
+	@Override
+	public int kakaoMembercheck(String memberId) {
+		int result = mStore.kakaoMembercheck(session, memberId);
+		return result;
+	}
+
+	@Override
+	public Member memberById(String memberId) {
+		Member member = mStore.memberById(session, memberId);
+		return member;
+	}
+
+	@Override
+	public int insertSocialMember(Member member) {
+		int result = mStore.insertSocialMember(session, member);
+		return result;
+	}
+
+	@Override
+	public String memberPwdById(String memberId) {
+		String encodePwd = mStore.memberPwdById(session, memberId);
+		return encodePwd;
+	}
+
+	@Override
+	public int memberNickCheck(String memberNick) {
+		int result = mStore.memberNickCheck(session, memberNick);
+		return result;
+	}
+
 	
 	
 }
