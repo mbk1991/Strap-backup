@@ -7,21 +7,21 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.kh.strap.member.domain.Member;
 import com.kh.strap.notebox.domain.NoteBox;
-import com.kh.strap.notebox.service.logic.NoteBoxServiceImpl;
+import com.kh.strap.notebox.service.NoteBoxService;
 
 
 @Controller
 public class NoteBoxController {
 	@Autowired
-	private NoteBoxServiceImpl nService;
+	private NoteBoxService nService;
 	
 	/**
 	 * 
@@ -73,17 +73,14 @@ public class NoteBoxController {
 	// 쪽지 상세페이지
 	@RequestMapping(value="/mypage/noteDetailView.strap", method=RequestMethod.GET)
 	public ModelAndView showNoteDetail(ModelAndView mv, HttpServletRequest request
-			,@RequestParam(value="noteNo", required=false) Integer noteNo) {
-		NoteBox noteBox = nService.printOneByNo(noteNo);
-//		HttpSession session = request.getSession();
-//		Member member = (Member)session.getAttribute("loginUser");
-//		String memberId = member.getMemberId();
-		
-//		mv.addObject("memberId", memberId);
-		mv.addObject("noteBox", noteBox);
+			,@ModelAttribute NoteBox noteBox) {
+		HttpSession session = request.getSession();
+		Member member = (Member)session.getAttribute("loginUser");
+		String memberId = member.getMemberId();
+		NoteBox nOne = nService.printOneByNo(noteBox);
+		mv.addObject("memberId", memberId);
+		mv.addObject("noteBox", nOne);
 		mv.setViewName("mypage/noteDetail");
-	
-		
 		return mv;
 	}
 	

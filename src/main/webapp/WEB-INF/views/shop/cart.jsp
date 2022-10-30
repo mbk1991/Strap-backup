@@ -59,7 +59,7 @@
 								<div class="cartPrice-wrap">
 										<span class='wonSymbol'>\</span>
 										<span class="cartPrice">
-											${cart.product.productPrice * cart.productAmount }
+											<fmt:formatNumber value="${cart.product.productPrice * cart.productAmount }" pattern="#,###"/> 
 										</span>
 								</div>
 							</div>
@@ -77,8 +77,8 @@
 				</h2>
 			</div>
 			<div id="cartBtn">
-				<button>쇼핑계속</button>
-				<button>구매하기</button>
+				<button onclick="location.href='/product/listView.strap';">쇼핑계속</button>
+				<button onclick="if(confirm('선택 상품을 구매하시겠습니까?')) location.href='/cart/orderView.strap';">구매하기</button>
 			</div>
 		</div>
 	</div>
@@ -197,7 +197,7 @@ function calCartTotalPrice(){
 	var sumPrice = 0;
 	for(var i = 0; i<'${cList.size()}'; i++){
 		if(document.querySelectorAll(".cartCheck")[2*i+1].checked){
-			var temp = document.querySelectorAll(".cartPrice")[i].innerHTML.replace(",","");
+			var temp = document.querySelectorAll(".cartPrice")[i].innerHTML.replace(/,/g,"");
 			sumPrice += Number(temp);
 		}
 	}
@@ -237,6 +237,7 @@ function removeCart(productNo,memberId){
 		type:"get",
 		success:function(result){
 			if(result == "success"){
+				calCartTotalPrice();
 				location.href="/cart/cartView.strap";
 			}else{
 			}
@@ -266,7 +267,6 @@ function cartCheck(checkBtn,memberId,productNo){
 			if(result == "success"){
 				calCartTotalPrice();
 			}else{
-				
 			}
 		},
 		error:function(){}

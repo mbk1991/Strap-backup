@@ -3,6 +3,7 @@ package com.kh.strap.shop.product.controller;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -17,11 +18,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.kh.strap.common.Paging;
 import com.kh.strap.common.Search;
 import com.kh.strap.member.domain.Member;
+import com.kh.strap.shop.cart.domain.Cart;
+import com.kh.strap.shop.cart.service.CartService;
 import com.kh.strap.shop.product.domain.Order;
+import com.kh.strap.shop.product.domain.OrderProduct;
 import com.kh.strap.shop.product.domain.Product;
 import com.kh.strap.shop.product.domain.ProductImg;
 import com.kh.strap.shop.product.domain.ProductLike;
@@ -63,15 +70,17 @@ public class ProductController {
 	
 	@Autowired
 	ProductService pService;
+	@Autowired
+	CartService cService;
 	
 	//보충제 리스트 출력
 	@RequestMapping(value="/product/listView.strap", method=RequestMethod.GET)
 	public ModelAndView viewProductList(ModelAndView mv,
 			Search search,
-			@RequestParam(value="page",required=false)Integer currentPage) {
+			@RequestParam(value="page",required=false)Integer currentPage
+			) {
 		int page = (currentPage != null)? currentPage : 1;
-		
-		Paging paging = new Paging(pService.countAllProduct(), page, 25, 5);
+		Paging paging = new Paging(pService.countAllProduct(), page, 10, 5);
 		List<Product>pList = pService.printAllProduct(paging, search);
 		mv.addObject("pList",pList).
 		addObject("paging",paging).
@@ -88,7 +97,7 @@ public class ProductController {
 			@RequestParam(value="page",required=false)Integer currentPage) {
 		int page = (currentPage != null)? currentPage : 1;
 		
-		Paging paging = new Paging(pService.countSearchProduct(search),page,25,5);
+		Paging paging = new Paging(pService.countSearchProduct(search),page,10,5);
 		List<Product>pList = pService.printAllProductSearch(paging, search);
 		mv.addObject("pList",pList).
 		addObject("paging",paging).
@@ -101,12 +110,14 @@ public class ProductController {
 	//상품 상세 페이지
 	@RequestMapping(value="/product/detailView.strap", method=RequestMethod.GET)
 	public ModelAndView viewProductDetail(ModelAndView mv,
-			@ModelAttribute Product product) {
+			@ModelAttribute Product product,
+			HttpSession session) {
 		
 		Product productResult = pService.printOneProduct(product);
 		List<ProductImg> infoList = pService.printInfoImgByNo(product);
 		List<ProductImg> subList = pService.printSubImgByNo(product);
 		
+		session.setAttribute("forOrderProduct", productResult);
 		
 		mv.addObject("product",productResult).
 		addObject("infoList",infoList).
@@ -115,18 +126,132 @@ public class ProductController {
 		return mv;
 	}
 	
-	//구매(주문페이지) 이동
-	@RequestMapping(value="/orderView.strap", method=RequestMethod.GET)
-	public ModelAndView viewOrderPage(ModelAndView mv) {
-		mv.setViewName("/shop/order");
+	//상세페이지 -> 주문페이지 이동
+	@RequestMapping(value="/detail/orderView.strap", method=RequestMethod.GET)
+	public ModelAndView viewOrderPageFromDetail(ModelAndView mv,
+			@RequestParam("qty")Integer qty,
+			HttpSession session
+			) {
+		//상세페이지에서 세션에 저장된 product값을 Cart List에 담아서 주문페이지로 전달
+		Product product = (Product)session.getAttribute("forOrderProduct");
+		List<Cart> cList = new ArrayList<>();
+		Cart cart = new Cart(product,qty);
+		cList.add(cart);
+		mv.addObject("cList",cList).
+		setViewName("/shop/order");
 		return mv;
 	}
 	
-	//주문페이지->결제
-	@RequestMapping(value="/order/payment.strap", method=RequestMethod.GET)
-	public ModelAndView orderProduct(ModelAndView mv) {
-		mv.setViewName("/shop/orderComplete");
+	//장바구니 -> 주문페이지 이동
+	@RequestMapping(value="/cart/orderView.strap", method=RequestMethod.GET)
+	public ModelAndView viewOrderPageFromCart(ModelAndView mv,
+			HttpSession session) {
+		//로그인한 회원의 장바구니 체크가 되어있는 상품들을 List로 가져와 주문페이지로 전달
+		//카트에 product를 담아주어야함.
+		Member loginUser = (Member)session.getAttribute("loginUser");
+		List<Cart> cList = cService.printCheckedCart(loginUser.getMemberId());
+		cList.stream().forEach(cart->{
+			cart.setProduct((pService.printOneProduct(new Product(cart.getProductNo()))));
+		});
+		mv.addObject("cList",cList).
+		setViewName("/shop/order");
 		return mv;
+	}
+	
+	//주문페이지->결제검증
+	@ResponseBody
+	@RequestMapping(value="/order/payment/completeCheck.strap",method=RequestMethod.POST)
+	public String orderProduct(
+			@RequestParam("imp_uid")String imp_uid, //결제번호
+			@RequestParam("merchant_uid")String merchant_uid, //주문번호
+			@RequestParam("paid_amount")Integer paid_amount, //결제금액
+			@RequestParam("status")String status, //주문상태
+			@ModelAttribute Order order){
+		
+		//1.결제된 금액과 주문했던 금액을 비교한다.
+		if(paid_amount == pService.getTobePaidFinalCost(merchant_uid)) {
+				System.out.println("검증성공");
+				if(status.equals("paid")) {
+					//2-1. 결제상태가 'paid'라면 결제 성공처리
+					//ORDER_STATUS = paid , PAY_COMPLETE = Y
+					pService.modifyPayCompleteOrder(merchant_uid);
+					return "success";
+					
+				}else if(status.equals("ready")) {
+					//2-2. 결제상태가 'ready'라면 주문테이블에 가상계좌 입금정보 UPDATE
+					order.setOrderNo(merchant_uid);
+					pService.modifyVBankInfo(order);
+					return "vbankIssued";
+					
+				}else {
+					//아임포트 응답값 rsp.status의 그 외 응답값 확인 필요.
+					return "";
+				}
+			}else {
+			//결제금액과 결제되어야 할 금액이 다른경우. 결제금액 불일치, 위변조 결제
+				System.out.println("검증 실패");
+				return "forgery";
+		}
+	}
+	
+	//주문 레코드 INSERT AJAX
+	@ResponseBody
+	@RequestMapping(value="/order/record.strap",method=RequestMethod.POST)
+	public String registerOrderRecord(
+			@ModelAttribute Order order,
+			@RequestParam("jsonArr") String jsonArr,
+			@RequestParam("orderNo") String orderNo) {
+		ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			//1.주문레코드를 INSERT한다.
+			order.setOrderNo(orderNo);
+			if(pService.registerOrder(order)>0) {
+				//2.json배열을 자바의 List로 변경하고 이를 이용하여 DB에 INSERT한다.
+				List<OrderProduct> opList =objectMapper.readValue(jsonArr, objectMapper.getTypeFactory().constructCollectionType(List.class, OrderProduct.class));
+				opList.stream().forEach(orderProduct ->{
+					pService.registerOrderProducts(orderProduct);
+				});
+				return "success";
+				
+			}else {
+				return "fail";
+				
+			}
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		} 
+		return "fail";
+	}
+	
+	//결제 및 가상계좌 발급 완료 -> 주문 완료 페이지
+	@RequestMapping(value="/order/completeView.strap",method=RequestMethod.GET)
+	public ModelAndView viewOrderCompletePage(ModelAndView mv,
+			@RequestParam("merchant_uid")String merchant_uid) {
+		
+		Order completeOrder = pService.printOneOrder(merchant_uid);
+		//OrderProduct를 담아야한다.
+		completeOrder.setOrderProducts(pService.printOrderProductsOnOrder(merchant_uid));
+		//Product를 담아야한다.//여기서 qty를 같이 담자.
+		completeOrder.setBuyProducts(pService.printProductsOnOrder(merchant_uid));
+		mv.addObject("completeOrder",completeOrder).
+		setViewName("/shop/orderComplete");
+		return mv;
+	}
+	
+	
+	//주문페이지에서 주소 저장 (,_)로 구분
+	@ResponseBody
+	@RequestMapping(value="/member/modifyAddr.strap",method=RequestMethod.POST)
+	public String modifyMemberAddr(
+			@ModelAttribute Member member) {
+		//없으면 저장, 있으면 변경
+		if(pService.modifyMemberAddr(member) > 0) {
+			return "success";
+		}else {
+			return "fail";
+		}
 	}
 	
 	//마이쇼핑 주문내역 리스트 출력(필터: 날짜)
@@ -147,7 +272,6 @@ public class ProductController {
 		oList.stream().forEach(order->{
 					order.setBuyProducts(pService.printProductsOnOrder(order.getOrderNo()));
 				});
-		System.out.println(oList.toString());
 		mv.addObject("oList",oList).
 		addObject("search",search).
 		addObject("paging",paging).

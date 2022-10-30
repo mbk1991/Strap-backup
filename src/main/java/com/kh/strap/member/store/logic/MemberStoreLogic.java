@@ -85,4 +85,52 @@ public class MemberStoreLogic implements MemberStore{
 		return result;
 	}
 
+	@Override
+	public int changeNick(SqlSession session, Member member) {
+		int result = session.update("MemberMapper.changeNick",member);
+		return result;
+	}
+
+	@Override
+	public int changeEmail(SqlSession session, Member member) {
+		int result = session.update("MemberMapper.changeEmail",member);
+		return result;
+	}
+
+	@Override
+	public int changeCareer(SqlSession session, Member member) {
+		int result = session.update("MemberMapper.changeCareer",member);
+		return result;
+	}
+
+	@Override
+	public int changeSBD(SqlSession session, Member member) {
+		int result = session.update("MemberMapper.changeSBD",member);
+		return result;
+	}
+
+	@Override
+	public int changeJym(SqlSession session, Member member) {
+		int result = session.update("MemberMapper.changeJym",member);
+		return result;
+	}
+
+	@Override
+	public int changeImg(SqlSession session, Member member) {
+		int result = session.update("MemberMapper.changeImg",member);
+		return result;
+	}
+
+	@Override
+	public int changeIntroduce(SqlSession session, Member member) {
+		int result = session.update("MemberMapper.changeIntroduce",member);
+		return result;
+	}
+
+	@Override
+	public void updateLastDate(SqlSession session, String memberId) {
+		session.update("MemberMapper.updateLastDate",memberId);
+		
+	}
+
 }

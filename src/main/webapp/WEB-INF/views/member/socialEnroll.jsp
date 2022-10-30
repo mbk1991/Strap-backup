@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" />
 	<style>
 		.registerForm{
-			margin: 100px auto;
+			margin: 50px auto;
 			text-align: center;
 			width: 500px;
 			border: 1px solid gray;
@@ -72,10 +72,12 @@
 			</c:if>
 	
 			<label for="memberJym">마이 짐</label><br>
-			<input type="text" id="memberJym" name="memberJym" size="35"><button type="button" class="btn btn-primary" onclick="showMap();">검색</button>
+			<input type="text" id="jymAddress" name="jymAddress" style="width: 280px;">
+			<input type="text" id="jymTitle" name="jymTitle" style="width: 216px;">
+			<button type="button" class="btn btn-dark" onclick="showMap();">검색</button>
 			<br><br>
 	
-			<button class="btn btn-primary">가입하기</button>
+			<button class="btn btn-dark">가입하기</button>
 			<input type="hidden" name="memberId" value="${userInfo.get('memberId') }">
 			<input type="hidden" name="mProfilePath" value="${userInfo.get('mProfilePath') }">
 			<br><br>

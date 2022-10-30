@@ -12,7 +12,7 @@ public class Member {
 	private String memberNick;		//6.닉네임
 	private String memberJym;		//7.마이짐
 	private String memberCareer;	//8.구력
-	private int memberSBD;			//9.3대
+	private String memberSBD;		//9.3대
 	private String mProfileName;	//10.프로필 사진 이름
 	private String mProfileRename;	//11.프로필 사진 리네임
 	private String mProfilePath;	//12.프로필 사진경로
@@ -21,8 +21,35 @@ public class Member {
 	private String adminStatus;		//15.관리자 상태
 	private int memberManner;		//16.매너 점수
 	private String memberType;		//17.회원 종류
+	private String memberIntroduce;	//18.회원 소개
+	private String memberAddress;	//19.회원 주소
+	private Date memberLastDate;	//20.최근 접속일
+
 	
-	
+
+	public Date getMemberLastDate() {
+		return memberLastDate;
+	}
+
+	public void setMemberLastDate(Date memberLastDate) {
+		this.memberLastDate = memberLastDate;
+	}
+
+	public String getMemberIntroduce() {
+		return memberIntroduce;
+	}
+
+	public void setMemberIntroduce(String memberIntroduce) {
+		this.memberIntroduce = memberIntroduce;
+	}
+
+	public String getMemberAddress() {
+		return memberAddress;
+	}
+
+	public void setMemberAddress(String memberAddress) {
+		this.memberAddress = memberAddress;
+	}
 
 	public Member() {}
 	
@@ -97,10 +124,10 @@ public class Member {
 	public void setMemberCareer(String memberCareer) {
 		this.memberCareer = memberCareer;
 	}
-	public int getMemberSBD() {
+	public String getMemberSBD() {
 		return memberSBD;
 	}
-	public void setMemberSBD(int memberSBD) {
+	public void setMemberSBD(String memberSBD) {
 		this.memberSBD = memberSBD;
 	}
 	public String getmProfileName() {
@@ -151,8 +178,13 @@ public class Member {
 				+ ", mProfileName=" + mProfileName + ", mProfileRename=" + mProfileRename + ", mProfilePath="
 				+ mProfilePath + ", mRegisterDate=" + mRegisterDate + ", memberStatus=" + memberStatus
 				+ ", adminStatus=" + adminStatus + ", memberManner=" + memberManner + ", memberType=" + memberType
-				+ "]";
+				+ ", memberIntroduce=" + memberIntroduce + ", memberAddress=" + memberAddress + ", memberLastDate="
+				+ memberLastDate + "]";
 	}
+
+	
+
+	
 
 
 

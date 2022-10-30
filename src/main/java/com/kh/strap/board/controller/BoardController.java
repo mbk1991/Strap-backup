@@ -1,10 +1,19 @@
 package com.kh.strap.board.controller;
 
+import com.kh.strap.admin.controller.*;
+import com.kh.strap.admin.domain.*;
+import com.kh.strap.admin.service.*;
+import com.kh.strap.admin.service.logic.*;
+import com.kh.strap.admin.store.*;
+import com.kh.strap.admin.store.logic.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +22,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,18 +31,24 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.kh.strap.admin.domain.Notice;
 import com.kh.strap.board.domain.Board;
+import com.kh.strap.board.domain.BoardReply;
 import com.kh.strap.board.service.logic.BoardServiceImpl;
 import com.kh.strap.member.domain.Member;
 
 
+@SuppressWarnings("unused")
 @Controller
 public class BoardController {
 	
 	@Autowired
 	private BoardServiceImpl bService;
-	
+	@Autowired
+	private NoticeService nService;
 	/**
 	 * 게시글 작성 페이지 이동
 	 * @return : "/board/boardWrite"
@@ -79,6 +95,7 @@ public class BoardController {
 		int currentPage = (page != null) ? page : 1;
 		int totalCount = bService.getTotalCount("","");
 		int boardLimit = 10;
+		int noticeLimit = 5;
 		int naviLimit = 5;
 		int maxPage;
 		int startNavi;
@@ -90,6 +107,8 @@ public class BoardController {
 			endNavi = maxPage;
 		}
 		List<Board> bList = bService.printAllBoard(currentPage, boardLimit);
+		List<Notice> nList = nService.printNoticeList(currentPage, noticeLimit);
+		
 		if(!bList.isEmpty()) {
 			mv.addObject("urlVal", "list");
 			mv.addObject("maxPage", maxPage);
@@ -97,6 +116,7 @@ public class BoardController {
 			mv.addObject("startNavi", startNavi);
 			mv.addObject("endNavi", endNavi);
 			mv.addObject("bList", bList);
+			mv.addObject("nList", nList);
 		}
 		mv.setViewName("board/boardListView");
 		return mv;
@@ -168,7 +188,6 @@ public class BoardController {
 			
 			// 1.파일 이름과 경로를 설정한다
 			String originalFileName = multipartFile.getOriginalFilename();	//오리지날 파일명
-			System.out.println(originalFileName);
 			String root = request.getSession().getServletContext().getRealPath("resources");
 			String savePath = root + "\\image\\board\\summerImageFiles";	//저장될 외부 파일 경로
 			
@@ -210,6 +229,7 @@ public class BoardController {
 	 * @param response
 	 * @return
 	 */
+	@ResponseBody
 	@RequestMapping(value="/board/detail.strap", method=RequestMethod.GET)
 	public ModelAndView boardDetailView(
 			ModelAndView mv
@@ -220,17 +240,7 @@ public class BoardController {
 			, HttpServletResponse response) {
 		// 해당 게시판 번호를 받아 상세페이지로 넘겨준다
 		Board board = bService.printOneByNo(boardNo);
-		/*
-		 * int goodCount=bService.getCountGood(boardNo); int
-		 * badCount=bService.getCountBad(boardNo); String
-		 * memberNick=(String)session.getAttribute("memberNick"); String record="";
-		 * System.out.println(memberNick); if(bService.getBoardRecord(memberNick,
-		 * boardNo)>0) { record="Y"; } else { record="N"; }
-		 * 
-		 * mv.addObject("goodCount", goodCount); mv.addObject("badCount", badCount);
-		 * mv.addObject("record", record);
-		 *
-		 */
+		
 		Cookie[] cookies = request.getCookies();	
 		// 비교하기 위해 새로운 쿠기
 		Cookie viewCookie = null;
@@ -269,26 +279,15 @@ public class BoardController {
 			}
 	}
 	
-	/*
-	 * @RequestMapping(value = "/board/boardGood.strap", method =
-	 * RequestMethod.POST) public String boardGood(@RequestParam("boardNo") Integer
-	 * boardNo, @RequestParam("memberNick") String memberNick,
-	 * 
-	 * @RequestParam("page") Integer page) { int result =
-	 * bService.addGoodBadCount(boardNo, memberNick, "GOOD"); if (result > 0) {
-	 * return "redirect:/board/detail.strap?boardNo=" + boardNo+"&page="+page; }
-	 * else { return "common.errorPage"; } }
-	 * 
-	 * @RequestMapping(value="/board/boardBad.strap", method=RequestMethod.POST)
-	 * public String boardBad(@RequestParam("boardNo") Integer
-	 * boardNo, @RequestParam("memberNick") String memberNick,
-	 * 
-	 * @RequestParam("page") Integer page) { int result =
-	 * bService.addGoodBadCount(boardNo, memberNick, "BAD"); if (result > 0) {
-	 * return "redirect:/board/detail.strap?boardNo=" + boardNo+"&page="+page; }
-	 * else { return "common.errorPage"; } }
+	/**
+	 * 게시글 추천
+	 * @param mv
+	 * @param boardNo
+	 * @param page
+	 * @param memberNick
+	 * @param session
+	 * @return
 	 */
-	
 	@ResponseBody
 	@RequestMapping(value = "/board/updateLike", method = RequestMethod.POST)
 	public ModelAndView updateLike(
@@ -317,5 +316,137 @@ public class BoardController {
 			e.printStackTrace();
 		}
 		return mv;
+	}
+	
+	/**
+	 * 게시글 수정페이지 이동
+	 * @param mv
+	 * @param boardNo
+	 * @param page
+	 * @return
+	 */
+	@RequestMapping(value = "/board/modifyView.strap", method = RequestMethod.GET)
+	public ModelAndView boardModifyView(
+			ModelAndView mv
+			, @RequestParam("boardNo") Integer boardNo
+			, @RequestParam("page") int page) {
+		try {
+			Board board = bService.printOneByNo(boardNo);
+			mv.addObject("board", board);
+			mv.addObject("page", page);
+			mv.setViewName("board/boardModify");			
+		} catch (Exception e) {
+			mv.addObject("msg", e.getMessage());
+			mv.setViewName("common/errorPage");
+	}
+		return mv;
+	}
+	
+	/**
+	 * 게시글 수정페이지
+	 * @param mv
+	 * @param board
+	 * @param page
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value="/board/modify.strap",method=RequestMethod.POST)
+	public ModelAndView boardModify(
+			ModelAndView mv
+			,@ModelAttribute Board board
+			,@RequestParam("page") Integer page
+			,HttpServletRequest request) {
+		try {
+			int result = bService.modifyOneByNo(board);
+			mv.setViewName("redirect:/board/list.strap?page="+page);
+		} catch (Exception e) {
+			mv.addObject("msg", e.getMessage());
+			mv.setViewName("common/errorPage");
+		}
+		return mv;
+	}
+	
+	/**
+	 * 게시글 삭제
+	 * @param session
+	 * @param model
+	 * @param page
+	 * @return
+	 */
+	@RequestMapping(value="/board/remove.strap", method=RequestMethod.GET)
+	public String boardRemove(
+			HttpSession session
+			, Model model
+			, @RequestParam("page") Integer page) {
+		try {
+			int boardNo = (int)session.getAttribute("boardNo");
+			int result = bService.removeOneByNo(boardNo);
+			if(result > 0) {
+				session.removeAttribute("boardNo");
+			}
+			return "redirect:/board/list.strap?page="+page;
+		} catch (Exception e) {
+			model.addAttribute("msg", e.toString());
+			return "common/errorPage";
+		}
+	}
+    
+	// 댓글 등록
+	@ResponseBody
+	@RequestMapping(value="/board/addReply.strap", method=RequestMethod.POST)
+	public String boardAddReply(
+			@ModelAttribute BoardReply bReply
+			, HttpSession session) {
+		Member member = (Member) session.getAttribute("loginUser");
+		String memberNick = member.getMemberNick();
+		int boardNo = bReply.getBoardNo();
+		bReply.setMemberNick(memberNick);
+		int result = bService.registerReply(bReply);
+		if(result > 0) {
+			return "success";
+		} else {
+			return "fail";
+		}
+	}
+	
+	// 댓글 리스트
+	@ResponseBody
+	@RequestMapping(value="/board/listReply.strap"
+	, produces="application/json;charset=utf-8"
+	, method=RequestMethod.GET)
+	public String boardListReply(
+			@RequestParam("boardNo") int boardNo) {
+		int bNo = (boardNo == 0) ? 1 : boardNo;
+		List<BoardReply> brList = bService.printAllReply(bNo);
+		if(!brList.isEmpty()) {
+			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+			return gson.toJson(brList);
+		}
+		return null;
+	}
+	
+	// 댓글 수정
+	@ResponseBody
+	@RequestMapping(value="/board/modifyReply.strap", method=RequestMethod.POST)
+	public String boardModifyReply(
+			@ModelAttribute BoardReply bReply) {
+		int result = bService.modifyReply(bReply);
+		if(result > 0) {
+			return "success";
+		} else {
+			return "fail";
+		}
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/board/deleteReply.strap", method=RequestMethod.GET)
+	public String boardDeleteReply(
+			@RequestParam("replyNo") Integer replyNo) {
+		int result = bService.deleteReply(replyNo);
+		if(result > 0) {
+			return "success";
+		} else {
+			return "fail";
+		}
 	}
 }

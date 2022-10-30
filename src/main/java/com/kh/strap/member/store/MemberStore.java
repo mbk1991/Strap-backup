@@ -33,4 +33,20 @@ public interface MemberStore {
 
 	int memberNickCheck(SqlSession session, String memberNick);
 
+	int changeNick(SqlSession session, Member member);
+
+	int changeEmail(SqlSession session, Member member);
+
+	int changeCareer(SqlSession session, Member member);
+
+	int changeSBD(SqlSession session, Member member);
+
+	int changeJym(SqlSession session, Member member);
+
+	int changeImg(SqlSession session, Member member);
+
+	int changeIntroduce(SqlSession session, Member member);
+
+	void updateLastDate(SqlSession session, String memberId);
+
 }
