@@ -138,10 +138,10 @@
 						</div>
 						<div id="pPrice" style="text-align:center; font-size:26px;font-weight:bold;">
 							<div id="price">
-								<span id='wonSymbol'>\</span> 
 								<span id="price" style="font-size:30px;">
 									<fmt:formatNumber value="${product.productPrice }" pattern="#,###"/>
 								</span>
+								<span id='wonSymbol'>원</span> 
 							</div>
 							<div id="function" style="color:#c0c0c0;">
 								<span id="${product.productNo }" class="likeBtn" onclick="loginCheck('${loginUser.memberId}',function(){controlLike('${loginUser.memberId}',${product.productNo });});"><i class="fa-solid fa-heart"></i></span>
@@ -160,10 +160,10 @@
 						<div id="pTotalPrice" style="font-size:23px;padding:12px;">
 							<span id="totalPriceLabel">총 상품금액  </span>
 							<span id="totalPrice">
-								<span id='wonSymbol'>\</span>
 								<span style="font-size:36px;color:darkorange;font-weight:bold;">
 									<fmt:formatNumber value="${product.productPrice }" pattern="#,###"/>
 								</span> 
+								<span id='wonSymbol'>원</span>
 						</div>
 						<hr>
 						<div id="btn-wrap">
@@ -217,7 +217,7 @@
 					</div>
 					<div id="pReviewWrite" class="row">
 						<div class="col">
-							<h3>상품후기</h3>
+							<h3>상품후기<span id="numberOfReview"></h3>
 						</div>
 						<div class="col" style="text-align:right;">
 							<button id="reviewArcodian" style="font-weight:bold;color:white;background-color:darkorange;border-style:none;border-radius:4px;height:40px;"  onclick="loginCheck('${loginUser.memberId}',function(){reviewArcodian();});">후기작성</button>
@@ -271,6 +271,7 @@
 					</div>
 				</div>
 <!-- 상품문의 영역 -->
+				<hr>
 				<div id="pQna" class="detail row">
 					<div id="pQna-wrap" class="col">
 						<h3>상품Q&A<span id="numberOfQna2"></span></h3>
@@ -306,7 +307,7 @@
 							<div id="qBtn" style="font-size:16px;">
 								 <label>
 									 <i class="fa-solid fa-lock"></i>비밀문의<input type="checkbox" name ="secretStatus" value = "Y">
-									<button type="button" onclick="registerQna();">등록</button>
+									<button type="button" style="font-weight:bold; margin-top:5px;color:white;background-color:darkorange;border-style:none;border-radius:4px;height:40px;" onclick="registerQna();">문의작성 완료</button>
 								 </label>
 							</div>
 						</form>
@@ -339,7 +340,7 @@ function calTotalPrice(){
 	var totalPriceTag = document.querySelector("#totalPrice");
 	var totalPrice = document.querySelector('#qty').value * '${product.productPrice}';
 	console.log(totalPrice);
-	totalPriceTag.innerHTML = "<span id='wonSymbol'>\\</span><span style='font-size:36px;color:darkorange;font-weight:bold;'> " + totalPrice.toLocaleString() + "</span>";
+	totalPriceTag.innerHTML = "<span style='font-size:36px;color:darkorange;font-weight:bold;'> " + totalPrice.toLocaleString() + "</span><span id='wonSymbol'>원</span>";
 }
 
 //로그인 체크
@@ -522,7 +523,7 @@ function printReview(page,searchColumn,orderCondition){
 				document.querySelector("#order-high-price").style.fontWeight="bolder";
 				document.querySelector("#order-high-price").style.textDecoration="underline";
 			}
-// 			document.querySelector("#numberOfReview").innerHTML = "("+paging.totalCount+")"
+			document.querySelector("#numberOfReview").innerHTML = "("+paging.totalCount+")"
 			if(rList.length < 1){
 				$reviewListDiv.innerHTML = "<h2>상품 리뷰가 없습니다.</h2>"
 			}else{
@@ -705,7 +706,7 @@ function printShopQna(page){
 											'<td class="answerYn col-2" style="font-weight:bold; color:'+answerColor+';">'+ qnaAnswer +'</td>'+
 											'<td class="answerTitle col-4" '+onclickTxt+'>'+
 												'<span class="answerType"> ['+ qnaTypetxt +']</span>'+
-												'<span >문의글 입니다.</span>'+
+												'<span >문의글입니다.</span>'+
 												'<span class="secretIcon">'+secretIcon+'</span>'+
 											'</td>'+
 											'<td class="col-2">'+qList[i].memberNick+'</td>'+

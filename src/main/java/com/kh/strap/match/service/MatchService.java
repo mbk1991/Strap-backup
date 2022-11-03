@@ -1,6 +1,9 @@
 package com.kh.strap.match.service;
 
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import com.kh.strap.member.domain.Member;
 import com.kh.strap.notebox.domain.NoteBox;
@@ -14,5 +17,28 @@ public interface MatchService {
 	String findIdByNick(String recipientNick);
 
 	int insertNoteBox(NoteBox nb);
+
+	int inserLocalRecord(Map<String, Object> map);
+
+	List<Member> localRefresh(Member mOne);
+
+	int updateLocalRecord(Map<String, Object> map);
+
+	void minusCount(Member mOne);
+
+	void resetLocalRecord(String memberId);
+
+	int getCountNumber(String memberId);
+
+	List<Member> mannerMember(Member mOne);
+
+	List<Member> mannerRefresh(Member mOne);
+
+	int updateMannerRecord(Map<String, Object> map);
+
+	int inserMannerRecord(Map<String, Object> map);
+
+	void resetMannerRecord(String memberId);
+
 
 }
