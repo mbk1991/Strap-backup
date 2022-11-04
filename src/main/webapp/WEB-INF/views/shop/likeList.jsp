@@ -34,12 +34,12 @@
 <!-- 컨텐츠 -->
 	<div id="contents" class="contents row">
 		<div class="sidebar col-3" >
-			<jsp:include page="/WEB-INF/views/common/sideBarShop.jsp"></jsp:include>
+			<jsp:include page="/WEB-INF/views/common/sideBarMyPage.jsp"></jsp:include>
 		</div>
 		<div class="contents-side col">
 			<div id="contents-wrap">
 				<div id="title">
-					<h3>찜한 상품 (${paging.totalCount })</h3><hr>
+					<span>찜한상품 (${paging.totalCount })</span><hr>
 				</div>
 			</div>
 				<c:forEach items="${pList }" var="product" varStatus="n">

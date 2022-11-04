@@ -65,12 +65,12 @@ input:disabled {
 <!-- 컨텐츠 -->
 	<div id="contents" class="contents row">
 		<div class="sidebar col-3" >
-			<jsp:include page="/WEB-INF/views/common/sideBarShop.jsp"></jsp:include>
+			<jsp:include page="/WEB-INF/views/common/sideBarMyPage.jsp"></jsp:include>
 		</div>
 		<div class="contents-side col" >
 			<div id="contents-wrap">
 				<div id="title">
-					<h3>나의 문의 (${paging.totalCount })</h3><hr>
+					<span>상품문의 (${paging.totalCount })</span><hr>
 				</div>
 				<div id="dateFilter" style="text-align:center;">
 					<div id="selectDate">
