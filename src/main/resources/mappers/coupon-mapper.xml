@@ -9,7 +9,8 @@
 		<id		column="COUPON_NO" 					 property="couponNo"/>
 		<result column="COUPON_NAME" 				 property="couponName"/>
 		<result column="COUPON_DESC" 			 	 property="couponDesc"/>
-		<result column="DISCOUNT_AMOUNT" 			 property="descountAmount"/>
+		<result column="DISCOUNT_AMOUNT" 			 property="discountAmount"/>
+		<result column="DISCOUNT_RATIO" 			 property="discountRatio"/>
 		<result column="PRICE_CONDITION" 			 property="priceCondition"/>
 		<result column="BRAND_CONDITION" 			 property="brandCondition"/>
 		<result column="FIRST_CONDITION" 			 property="firstCondition"/>
@@ -17,35 +18,75 @@
 		<result column="COUPON_REGI_DATE" 			 property="couponRegiDate"/>
 		<result column="PRODUCT_CONDITION"			 property="productCondition"/>
 		<result column="COUPON_RUN_YN" 				 property="couponRunYn"/>
-	</resultMap>
-	<resultMap type="MemberCoupon" id="MemberCouponResultMap" >
-		<id 	column="COUPON_NO" 					 property="couponNo"/>
-		<result column="MEMBER_ID" 					 property="memberId"/>
 		<result column="GET_COUPON_DATE" 			 property="getCouponDate"/>
 		<result column="END_COUPON_DATE" 			 property="endCounponDate"/>
 		<result column="USE_YN" 					 property="useYn"/>
+		<result column="COUON_IMG_ROOT" 			 property="couponImgRoot"/>
+		<result column="COUPON_IMG_NAME" 			 property="couponImgName"/>
+		<result column="COUPON_IMG_RENAME" 		     property="couponImgRename"/>
+		<result column="DISCOUNT_METHOD" 		     property="discountMethod"/>
+		<result column="MEMBER_ID" 		    		 property="memberId"/>
 	</resultMap>
 	
 	<insert id="insertCoupon">
 		INSERT INTO COUPON_TBL
-		VALUES(SEQ_COUON_NO.NEXTVAL,#{couponName},#{couponDesc},#{descountAmount},#{priceCondition},#{brandCondition},#{couponPeriod},DEFAULT,DEFAULT,#{productCondition},DEFAULT)
+		VALUES(SEQ_COUPON_NO.NEXTVAL,#{couponName},#{couponDesc},#{discountAmount},#{priceCondition},#{brandCondition},#{firstCondition},#{couponPeriod},DEFAULT,#{productCondition},DEFAULT,#{discountRatio},#{couponImgRoot},#{couponImgName},#{couponImgRename},#{discountMethod})
 	</insert>
 	
 	<select id="selectCoupon" resultMap="CouponResultMap">
 		SELECT * FROM COUPON_TBL
+		<if test='searchVal != "" and searchVal != null'>
+			WHERE (COUPON_NAME LIKE '%'||#{searchVal}||'%') OR(COUPON_DESC LIKE '%'||#{searchVal}||'#')
+		</if>
+		<choose>
+			<when test = 'searchColumn != "" and searchColumn != null'>
+				ORDER BY ${searchColumn} ${orderCondition}
+			</when>
+			<otherwise>
+				ORDER BY COUPON_REGI_DATE DESC
+			</otherwise>
+		</choose>
 	</select>	
 	
 	<select id="selectMemberCoupon" resultMap="CouponResultMap">
 		SELECT * 
 		FROM COUPON_TBL C JOIN MEMBER_COUPON_TBL MC
 		ON C.COUPON_NO = MC.COUPON_NO
-		WHERE MEMBER_ID = #{memberId}
+		WHERE MEMBER_ID = #{memberId} AND USE_YN = 'N' AND END_COUPON_DATE > SYSDATE
+	</select>
+	
+	<select id="selectCouponCount" resultType="_int">
+		SELECT COUNT(*)
+		FROM COUPON_TBL
+		<if test='searchVal != "" and searchVal != null'>
+			WHERE (COUPON_NAME LIKE '%'||#{searchVal}||'%') OR(COUPON_DESC LIKE '%'||#{searchVal}||'#')
+		</if>
+	</select>
+	
+	<select id="selectMemberCouponCount" resultType="_int">
+		SELECT COUNT(*)
+		FROM COUPON_TBL C JOIN MEMBER_COUPON_TBL MC
+		ON C.COUPON_NO = MC.COUPON_NO
+		WHERE MEMBER_ID = #{memberId} AND USE_YN = 'N' AND END_COUPON_DATE > SYSDATE
+	</select>
+	
+	<select id="selectCouponDetail" resultMap="CouponResultMap">
+		SELECT *
+		FROM COUPON_TBL
+		WHERE COUPON_NO = #{couponNo}
 	</select>
 	
 	<update id="deleteCoupon">
 		UPDATE COUPON_TBL 
 		SET  COUPON_RUN_YN = 'N'
 	</update>
+	
+	<select id ="selectAlreadyCouponCheck" resultType="_int">
+		SELECT COUNT(*)
+		FROM MEMBER_COUPON_TBL
+		WHERE COUPON_NO = #{couponNo}
+		AND MEMBER_ID = #{memberId}
+	</select>
 	
 	<insert id="insertMemberCoupon">
 		INSERT INTO MEMBER_COUPON_TBL
@@ -55,5 +96,12 @@
 	<update id="updateMemberCoupon">
 		UPDATE MEMBER_COUPON_TBL
 		SET USE_YN='Y'
+		WHERE MEMBER_ID = #{memberId} AND COUPON_NO = #{couponNo}
+	</update>
+	
+	<update id="updateRestoreMemberCoupon">
+		UPDATE MEMBER_COUPON_TBL
+		SET USE_YN='N'
+		WHERE MEMBER_ID = #{memberId} AND COUPON_NO = #{couponNo}
 	</update>
 </mapper>

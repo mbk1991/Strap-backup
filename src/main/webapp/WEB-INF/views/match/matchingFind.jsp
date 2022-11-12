@@ -23,7 +23,7 @@
 		#myInfoTable textarea{width: 250px; height: 100px; resize: none;}
 		.find{width: 320px; text-align: left}
 		.findImg{width: 30px; height: 30px;}
-		#profileImgDiv{overflow: hidden; border-radius: 125px; width: 180px; height: 180px; margin: 10px auto;}
+		#profileImgDiv{overflow: hidden; border-radius: 50px; width: 180px; height: 180px; margin: 10px auto;}
 		#profileImgDiv img{width: 100%; height: 100%;}
 	</style>
 </head>
@@ -143,8 +143,13 @@
 		var jymTitle = memberJym[1];
 		var memberManner = '${loginUser.memberManner}';
 		var memberIntroduce = '${loginUser.memberIntroduce}';
-		//profileImt
-		$("#profileImg").attr("src","/resources/profileUploadFiles/"+mProfileRename);
+		//profileImg
+		if(mProfileRename != ''){
+			$("#profileImg").attr("src","/resources/profileUploadFiles/"+mProfileRename);
+		}else{
+			$("#profileImg").attr("src","/resources/profileUploadFiles/default.png");
+		}
+		
 		//Career
 		if(memberCareer =='1'){
 			$("#memberCareer").val("1").prop("selected", true);

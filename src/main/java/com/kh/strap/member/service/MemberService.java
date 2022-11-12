@@ -49,9 +49,17 @@ public interface MemberService {
 
 	void updateLastDate(String memberId);
 
-	int inserAnswer(Map<String, String> map);
+	int inserAnswer(Map<String, Object> map);
 
 	List<SimpleQnA> simpleQnA(String memberId);
+
+	SimpleQnA qnaOne(String memberId);
+
+	int withdrawal(String memberId);
+
+	int mannerPercent(String memberId);
+
+	int changeAddr(Member member);
 
 
 }

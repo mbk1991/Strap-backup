@@ -10,10 +10,12 @@
 	<!-- 타입엘리아스 사용 -->
 	<typeAliases>
 		<typeAlias type="com.kh.strap.admin.domain.Admin" 				alias="Admin"/>
+		<typeAlias type="com.kh.strap.admin.domain.AdminQna" 			alias="AdminQna"/>
+		<typeAlias type="com.kh.strap.admin.domain.AdminReport" 		alias="AdminReport"/>
 		<typeAlias type="com.kh.strap.admin.domain.Banner" 				alias="Banner"/>
 		<typeAlias type="com.kh.strap.board.domain.Board" 				alias="Board"/>
 		<typeAlias type="com.kh.strap.board.domain.BoardReply" 			alias="BoardReply"/>
-		<typeAlias type="com.kh.strap.board.domain.BoardReReply" 		alias="BoardReReply"/>
+		<!-- <typeAlias type="com.kh.strap.board.domain.BoardReReply" 		alias="BoardReReply"/> -->
 		<typeAlias type="com.kh.strap.match.domain.Match" 				alias="Match"/>
 		<typeAlias type="com.kh.strap.match.domain.MemberRecordJoin"	alias="MemberRecordJoin"/>
 		<typeAlias type="com.kh.strap.mypage.domain.MyPage" 			alias="MyPage"/>
@@ -25,6 +27,7 @@
 		<typeAlias type="com.kh.strap.schedule.domain.Schedule" 		alias="Schedule"/>
 		<typeAlias type="com.kh.strap.member.domain.Member" 			alias="Member"/>
 		<typeAlias type="com.kh.strap.member.domain.SimpleQnA" 			alias="SimpleQnA"/>
+		<typeAlias type="com.kh.strap.member.domain.SimpleAnswer" 		alias="SimpleAnswer"/>
 		<typeAlias type="com.kh.strap.shop.cart.domain.Cart" 			alias="Cart"/>
 		<typeAlias type="com.kh.strap.shop.coupon.domain.Coupon" 		alias="Coupon"/>
 		<typeAlias type="com.kh.strap.shop.coupon.domain.MemberCoupon" 	alias="MemberCoupon"/>
@@ -42,8 +45,11 @@
 	</typeAliases>
 	<mappers>
 		<mapper resource="mappers/admin-mapper.xml"/>
+		<mapper resource="mappers/adminqna-mapper.xml"/>
+		<mapper resource="mappers/adminreport-mapper.xml"/>
 		<mapper resource="mappers/banner-mapper.xml"/>
 		<mapper resource="mappers/board-mapper.xml"/>
+		<mapper resource="mappers/board-reply-mapper.xml"/>
 		<mapper resource="mappers/cart-mapper.xml"/>
 		<mapper resource="mappers/coupon-mapper.xml"/>
 		<mapper resource="mappers/match-mapper.xml"/>

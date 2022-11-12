@@ -6,6 +6,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.kh.strap.member.domain.Member;
 import com.kh.strap.notebox.domain.NoteBox;
 import com.kh.strap.notebox.service.NoteBoxService;
 import com.kh.strap.notebox.store.NoteBoxStore;
@@ -16,41 +17,53 @@ public class NoteBoxServiceImpl implements NoteBoxService {
 	@Autowired
 	private SqlSession session;
 	@Autowired
-	private NoteBoxStore nStore;
+	private NoteBoxStore nbStore;
 	
 	@Override
-	public int getTotalCount(String searchCondition, String searchValue) {
-		int totalCount = nStore.selectTotalCount(session, searchCondition, searchValue);
+	public int getTotalCount(String searchCondition, String searchValue, String memberId) {
+		int totalCount = nbStore.selectTotalCount(session, searchCondition, searchValue, memberId);
 		return totalCount;
 	}
 
 	@Override
 	public List<NoteBox> printNoteBoxList(String memberId, int currentPage, int noticeLimit) {
-		List<NoteBox> nList = nStore.selectAllNoteBox(session, memberId, currentPage, noticeLimit);
+		List<NoteBox> nList = nbStore.selectAllNoteBox(session, memberId, currentPage, noticeLimit);
 		return nList;
 	}
 
 	@Override
 	public NoteBox printOneByNo(NoteBox noteBox) {
-		NoteBox nOne = nStore.selectOneByNo(session, noteBox);
+		NoteBox nOne = nbStore.selectOneByNo(session, noteBox);
 		return nOne;
 	}
 
 	@Override
+	public Member printOneByName(String senderNick) {
+		Member mOne = nbStore.selectOneByName(session, senderNick);
+		return mOne;
+	}
+
+	@Override
 	public int getCountNoteBox(String memberId) {
-		int result = nStore.selectCountNoteBox(session, memberId);
+		int result = nbStore.selectCountNoteBox(session, memberId);
 		return result;
 	}
 
 	@Override
-	public List<NoteBox> printAllByValue(String searchCondition, String searchValue, int currentPage, int noticeLimit) {
-		List<NoteBox> nlist = nStore.selectAllByValue(session,searchCondition, searchValue, currentPage, noticeLimit);
+	public List<NoteBox> printAllByValue(String searchCondition, String searchValue, String memberId, int currentPage, int noticeLimit) {
+		List<NoteBox> nlist = nbStore.selectAllByValue(session,searchCondition, searchValue, memberId, currentPage, noticeLimit);
 		return nlist;
 	}
 
 	@Override
 	public int checkNote(NoteBox noteBox) {
-		int result = nStore.updateCheckNote(session, noteBox);
+		int result = nbStore.updateCheckNote(session, noteBox);
+		return result;
+	}
+
+	@Override
+	public int removeNote(int noteNo) {
+		int result = nbStore.deleteNote(session, noteNo);
 		return result;
 	}
 	

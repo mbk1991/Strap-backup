@@ -122,4 +122,12 @@ public interface ProductStore {
 		//멤버 주소 등록 및 수정
 		public int updateMemberAddr(SqlSession session,Member member);
 		
+//상품 브랜드 정보 리스트 출력
+		public List<Product> getProductBrandList(SqlSession session);
+//상품명 정보 리스트 출력
+		public List<Product> getProductNameList(SqlSession session);
+		
+//메인페이지 베스트상품 top3
+		public List<Product> selectGetTopProducts(SqlSession session);
+		
 }

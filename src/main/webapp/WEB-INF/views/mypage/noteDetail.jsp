@@ -17,7 +17,11 @@
 <link rel="stylesheet" type="text/css" href="/resources/css/modal.css">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
+
 <style>
+	.container{
+		max-width: 660px;
+	}
 	.contents-side.col{
 		padding-left: 15px;
 	}
@@ -43,6 +47,10 @@
 		right:10px;
 		
 	}
+	.profile-input{
+	border:none;
+}
+	
 </style>
 </head>
 <body>
@@ -52,11 +60,17 @@
 		<div class="row">
 			<div class="contents-side col">
 				<div id="essential info">
-					<span> 쪽지 </span>
-					<hr>
+					<br>
+					<span><h5> 쪽지 </h5></span>
 				</div>
 			</div>
+			<div class="col text-end">
+				<br>
+				<button class="btn btn-dark" onclick="noteBoxBack();">목록으로</button>
+				<button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#reportNote" id="btn-2">신고</button>
+			</div>
 		</div>
+		<hr>
 		<div class="row">
 			<div class="col">
 				보낸 사람 : ${noteBox.senderNick }
@@ -64,28 +78,74 @@
 		</div>
 		<div class="row">
 			<div class="col">
-				보낸 시간 : <fmt:formatDate pattern="yyyy-MM-dd / hh:mm:ss" value="${noteBox.senderTime }"/>   ||   <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#reportNote" id="btn-2">신고</button>
+				보낸 시간 : <fmt:formatDate pattern="yyyy-MM-dd / hh:mm:ss" value="${noteBox.senderTime }"/>
 			</div>
 		</div>
 		<hr>
-		<div class="row border border-secondary border-opacity-50">
-			<div class="col">
-				<div class="row">
-					<div class="col">
-						제목 : ${noteBox.noteTitle }
-					</div>
-				</div>
-				<br>
-				<div class="row">
-					<div class="col">
-						내용 : ${noteBox.noteContents }
+		<!-- 수락 전  -->
+		<c:if test="${noteBox.noteAccept eq 'N' }"> 
+			<div class="row border border-secondary border-opacity-50">
+				<div id="profile">
+					<div class="row" id="info">
+						<div class="col-5" id="info-img">
+							<div class="imgDiv">
+							<c:if test="${empty member.mProfilePath }">
+								<img id="profileImg" width="100%" height="100%" src="/resources/profileUploadFiles/default.png">
+							</c:if>
+							<c:if test="${not empty member.mProfilePath }">
+								<img id="profileImg" width="100%" height="100%" src="/resources/profileUploadFiles/${member.mProfileRename }">
+							</c:if>
+							</div>
+						</div>
+						<div class="col" id="info-detail">
+							<table id="infoTable" class="table table-borderless">
+								<tr>
+									<th>닉네임</th>
+									<td>
+										<input class="profile-input" type="text" id="memberNick"  value="${member.memberName }" readonly>
+									</td>
+								</tr>
+								<tr>
+									<th>운동경력</th>
+									<td>
+										<input class="profile-input" type="text" id="memberCareer" value="${member.memberCareer}" readonly>
+									</td>
+								</tr>
+								<tr>
+									<th>3대 기록</th>
+									<td>
+										<input class="profile-input" type="text" id="memberSBD" value="${member.memberSBD}" readonly>
+									</td>
+								</tr>
+								<tr>
+									<th>마이짐</th>
+									<td>
+										<input class="profile-input" type="text" id="jymAddress" name="jymAddress" style="width: 250px;border:0;" value="${member.memberJym}"  readonly><br>
+										<input class="profile-input" type="text" id="jymTitle" name="jymTitle" style="width: 250px;border:0;" readonly>	
+									</td>
+								</tr>
+								<tr>
+									<th>성별</th>
+									<td>
+										<input class="profile-input" type="text" id="memberGender" name="memberGender" style="width: 250px;border: 0" value="${member.memberGender}" readonly> 
+									</td>
+								</tr>
+								<tr>
+									<th>매너점수</th>
+									<td>
+										<input class="profile-input" type="text" id="memberManner" name="membmerManner" value="${member.memberManner}" readonly>
+									</td>
+								</tr>
+								<tr>
+									<th>자기소개</th>
+									<td><textarea class="profile-input" id="memberIntroduce"  readonly>${member.memberIntroduce}</textarea></td>
+								</tr>
+							</table>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-		<br>
-		<!-- 수락 전  -->
-		<c:if test="${noteBox.noteAccept eq 'N' }"> 
+			<br>
 			<div class="row text-center">
 				<div class="col">
 					<button class="btn btn-dark" id="accept">수락</button>
@@ -103,7 +163,7 @@
 				<div class="col">
 					<div class="row">
 						<div class="col">
-							<input type="text" id="chat-contents" required>
+							<input class="form-control" type="text" id="chat-contents" required>
 							<button class="btn btn-dark" id="chat-btn">입력</button>
 						</div>
 					</div>
@@ -136,8 +196,14 @@
 				<div class="col">
 					<div class="row">
 						<div class="col">
-							<input type="text" id="chat-contents" required>
+						</div>
+						<div class="col-auto">
+							<input class="form-control" type="text" id="chat-contents" required>
+						</div>
+						<div class="col-auto">
 							<button class="btn btn-dark" id="chat-btn">입력</button>
+						</div>
+						<div class="col">
 						</div>
 					</div>
 					<hr>
@@ -150,20 +216,20 @@
 								시간 : <input class="timepicker" id="meet-time" required/>
 							</div>
 							<div class="col-4" align="center">
-								메모 : <input type="text" id="meet-memo"  placeholder="ex)운동부위" required/>
+								메모 : <input type="text" id="meet-memo"  placeholder="ex)헬스장, 운동부위" required/>
 							</div>
 						</div>
 					</c:if>
 					<c:if test="${noteBox.recipientId ne memberId }"> 
 						<div class="row" style="display:none;">
-							<div class="col-4" align="center">
+							<div class="col-auto" align="center">
 								날짜 : <input type="date" id="meet-date" required/>
 							</div>
-							<div class="col-4" align="center">
+							<div class="col-auto" align="center">
 								시간 : <input class="timepicker" id="meet-time" required/>
 							</div>
-							<div class="col-4" align="center">
-								메모 : <input type="text" id="meet-memo"  placeholder="ex)운동부위" required/>
+							<div class="col-auto" align="center">
+								메모 : <input type="text" id="meet-memo"  placeholder="ex)헬스장, 운동부위" required/>
 							</div>
 						</div>
 					</c:if>
@@ -201,14 +267,11 @@
 				<div class="modal-body">
 					<div class="modal-body p-5 pt-0">
 						<form id="report-form">
-							<input type="hidden" value="RC1" name="contentsCode"> <input
-								type="hidden" value=${noteBox.noteNo } name="contentsNo">
-							<input type="hidden" value=${noteBox.senderId }
-								name="reportMember"> <input type="hidden"
-								value=${noteBox.senderNick } name="reportMemberNick"> <input
-								type="hidden" value=${noteBox.noteTitle } name="noteTitle">
-							<input type="hidden" value=${noteBox.noteContents }
-								name="noteContents">
+							<input type="hidden" value="RC1" name="contentsCode"> 
+							<input type="hidden" value=${noteBox.noteNo } name="contentsNo">
+							<input type="hidden" value=${noteBox.senderId }	name="reportMember"> 
+							<input type="hidden" value=${noteBox.senderNick } name="reportMemberNick">
+							<input type="hidden" value=${noteBox.noteContents }	name="noteContents">
 							<%-- 					<input type="hidden" value=${. } name="memberId">  신고자 추가해야함--%>
 							<div class="form-floating mb-3">
 								<p>신고 종류</p>
@@ -304,24 +367,20 @@
 		// 수락 ajax
 		$("#accept").on("click",function(){
 			$(this).hide();
-			$("#chat-window").show();
-			$("#chat-area").show();
-			
 			$.ajax({
-				url : "/notebox/noteChatListView.strap",
+				url : "/notebox/acceptNote.strap",
 				data : {
-					"noteNo":'${noteBox.noteNo }', 
-					"senderNick":'${noteBox.senderNick }',
-					"recipientId":'${noteBox.recipientId }',
-					"recipientNick":'${noteBox.recipientNick }'},
-				datatype : "html",
-				type : "get",
+					"noteNo":'${noteBox.noteNo }'},
+				type : "post",
 				success:function(data){
 					console.log(data)
-					$("#chat-column").html(data);
+// 					$("#chat-column").html(data);
+					$("#chat-window").show();
+					$("#chat-area").show();
 					alert("수락 완료!");
-				},error:function(){
-					alert("실패");
+					location.reload(true);
+				},error:function(request, status, error){
+					console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
 				}
 			});
 		});
@@ -345,11 +404,11 @@
 				type : "get",
 				success:function(data){
 					console.log(data);
-					alert("쪽지 입력 성공");
+// 					alert("쪽지 입력 성공");
 					cContents.val("");
 					location.reload(true);
 				},error:function(){
-					alert("쪽지 실패");
+// 					alert("쪽지 실패");
 				}
 			});
 		});
@@ -359,7 +418,7 @@
 		var timeOff = new Date().getTimezoneOffset()*60000; // 분단위를 밀리초로 변환
 		//new Date(now_utc-timeOff).toISOString()은 '2022-05-11T18:09:38.134Z'를 반환
 		var today = new Date(now_utc-timeOff).toISOString().split("T")[0]; //2022-05-11
-		document.getElementById("meet-date").setAttribute("min", today);
+		$("#meet-date").attr("min", today);
 	});
 	
 	// 일정 잡기
@@ -368,19 +427,11 @@
 		var meetTime = $("#meet-time")
 		var meetMemo = $("#meet-memo").val()
 		var meetDateTime = meetDate.val()+ " " + meetTime.val();
-// 		alert("날짜 + 시간 : "+   );
-		
 		if(meetDate.val()==""){
 			alert("날짜를 선택하세요");
 		}else if(meetMemo==""){
 			alert("메모를 작성해주세요");
-		}
-		console.log('${noteBox.recipientId }');
-		console.log('${noteBox.recipientNick }');
-		console.log('${noteBox.senderId }');
-		console.log('${noteBox.senderNick }');
-		console.log(meetMemo);
-		console.log(meetDateTime);
+		}else if(meetDate.val()!="" && meetMemo!="")
 		$.ajax({
 			url : "/schedule/registerSchedule.strap",
 			data : {
@@ -409,6 +460,10 @@
 		});
 	};
 	
+	
+	function noteBoxBack(){
+		history.back();
+	}
 	
 	
 	

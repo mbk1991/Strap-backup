@@ -18,9 +18,9 @@
 	padding-left: 15px;
 }
 
-.contents-side.col th, .contents-side.col td {
-	height: 50px;
-}
+/* .contents-side.col th, .contents-side.col td { */
+/* 	height: 50px; */
+/* } */
 
 
 select.select {
@@ -46,6 +46,12 @@ th{
 td{
 	text-align: center;
 }
+.qna-contents{
+	text-decoration:none;
+	color:black;
+	cursor:pointer;
+}
+
 </style>
 </head>
 <body>
@@ -74,7 +80,7 @@ td{
 										<th scope="col" style="width:400px;" >제목</th>
 										<th scope="col" style="width:200px;">작성일</th>
 										<th scope="col" style="width:200px;">처리상태</th>
-										<th scope="col" style="width:0px;"></th>
+										<th scope="col" style="width:200px;">처리상태</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -82,17 +88,29 @@ td{
 										<c:if test="${not empty qList }">
 											<tr>
 												<th scope="row">${qna.qnaType }</th>
-												<td>${qna.qnaTitle }</td>
+												<td><a class="qna-contents" id="qna-contents${i.index }" onclick="qnaFolding(this);">${qna.qnaTitle }</a></td>
 												<td>${qna.qEnrollDate }</td>
+												<td>
+													<button class="btn btn-dark" style="width:70px" onclick="location.href='/qna/modifyQnaView.strap?qnaNo=${qna.qnaNo}'">수정</button>
+													<button class="btn btn-dark" style="width:70px" onclick="window.confirm('문의를 삭제하시겠습니까?');location.href='/qna/removeQna.strap?qnaNo=${qna.qnaNo}'">삭제</button>
+												</td>
 												<c:if test="${qna.answerStatus eq 'N' }">
-													<td colspan=2>
-														<button class="btn btn-dark" style="width:70px" onclick="location.href='/qna/modifyQnaView.strap?qnaNo=${qna.qnaNo}'">수정</button>
-														<button class="btn btn-dark" style="width:70px" onclick="window.confirm('문의를 삭제하시겠습니까?');location.href='/qna/removeQna.strap?qnaNo=${qna.qnaNo}'">삭제</button>
-													</td>
+													<td>답변 대기중</td>
 												</c:if>
 												<c:if test="${qna.answerStatus eq 'Y' }">
-													<td><button class="btn btn-dark" disabled>답변 완료</button></td>
+													<td>답변 완료!</td>
 												</c:if>
+											</tr>
+											<tr class="qnaDetailArea" style="display:none">
+												<td colspan="5" style="padding:10px 70px;text-align:left;">
+													${qna.qnaContents }
+												</td>
+											</tr>
+											<tr class="qnaDetailArea" style="margin-bottom:50px;display:none;">
+												<td colspan="5" style="padding:10px 70px;background-color:#E7E7E7;text-align:left;">
+													<c:if test="${qna.answerContents eq '' or qna.answerContents eq null}"><span>ㄴ답변 대기중입니다.</span></c:if>
+													<c:if test="${qna.answerContents ne '' and qna.answerContents ne null}"><span>ㄴ${qna.answerContents}</span></c:if>
+												</td>
 											</tr>
 										</c:if>
 									</c:forEach>
@@ -123,6 +141,21 @@ td{
 		</div>
 	</div>
 </div>
-
+<script>
+//답변 펼치기
+//답변 펼치기
+function qnaFolding(thisBtn){
+	console.log(thisBtn);
+	var thisQuestionArea =thisBtn.parentElement.parentElement.nextSibling.nextElementSibling;
+	var thisAnswerArea = thisBtn.parentElement.parentElement.nextSibling.nextElementSibling.nextElementSibling;
+	if(thisQuestionArea.style.display =="none"){
+		thisQuestionArea.style.display = "table-row";
+		thisAnswerArea.style.display = "table-row";
+	}else{
+		thisQuestionArea.style.display = "none";
+		thisAnswerArea.style.display = "none";
+	}
+}
+</script>
 </body>
 </html>

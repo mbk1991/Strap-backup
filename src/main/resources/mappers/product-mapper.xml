@@ -238,4 +238,22 @@
 		FROM PRODUCT_LIKE_TBL
 		WHERE MEMBER_ID= #{memberId}
 	</select>
+	
+<!-- 브랜드 및 상품명 리스트 출력 -->
+	<select id="selectGetBrands" resultMap="ProductResultMap">
+		SELECT DISTINCT(PRODUCT_BRAND) FROM PRODUCT_TBL
+	</select>
+	
+	<select id="selectGetNames" resultMap="ProductResultMap">
+		SELECT DISTINCT(PRODUCT_NAME) FROM PRODUCT_TBL
+	</select>
+	
+<!-- 메인페이지 베스트 상품 top3 -->
+	<select id="selectGetTopProducts" resultMap="ProductResultMap">
+		SELECT *
+		FROM (SELECT DENSE_RANK() OVER(ORDER BY GRADE_AVER DESC, REVIEW_COUNT DESC) AS RANKNUM, P.*
+			  FROM PRODUCT_TBL P)
+		WHERE RANKNUM <![CDATA[<=]]> 3
+	</select>
+	
 </mapper>

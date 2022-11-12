@@ -4,26 +4,115 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
   
 <mapper namespace="AdminMapper">
-	<resultMap type= "Admin" id="adminResultMap">
-		<id property="adminId" column="MEMBER_ID"/>
-		<result property="adminPwd" column="MEMBER_PWD"/>
-		<result property="adminName" column="MEMBER_NAME"/>
-		<result property="adminEmail" column="MEMBER_EMAIL"/>
-		<result property="adminGender" column="MEMBER_GENDER"/>
-		<result property="adminNick" column="MEMBER_NICK"/>
-		<result property="adminJym" column="MEMBER_JYM"/>
-		<result property="adminCareer" column="MEMBER_CAREER"/>
-		<result property="adminSbd" column="MEMBER_SBD"/>
-		<result property="aProfileName" column="M_PROFILE_NAME"/>
-		<result property="aProfileRename" column="M_PROFILE_RENAME"/>
-		<result property="aProfilepath" column="M_PROFILE_PATH"/>
-		<result property="aRegisterDate" column="M_REGISTER_DATE"/>
-		<result property="memberStatus" column="MEMBER_STATUS"/>
-		<result property="adminStatus" column="ADMIN_STATUS"/>
+	<resultMap type="Member" id="adminResultMap">
+  		<id property="memberId" 			column="MEMBER_ID"/>
+  		<result property="memberPwd" 		column="MEMBER_PWD"/>
+  		<result property="memberName" 		column="MEMBER_NAME"/>
+  		<result property="memberEmail"		column="MEMBER_EMAIL"/>
+  		<result property="memberGender"		column="MEMBER_GENDER"/>
+  		<result property="memberNick" 		column="MEMBER_NICK"/>
+  		<result property="memberJym"		column="MEMBER_JYM"/>
+  		<result property="memberCareer" 	column="MEMBER_CAREER"/>
+  		<result property="memberSBD" 		column="MEMBER_SBD"/>
+  		<result property="mProfileName" 	column="M_PROFILE_NAME"/>
+  		<result property="mProfileRename" 	column="M_PROFILE_RENAME"/>
+  		<result property="mProfilePath" 	column="M_PROFILE_PATH"/>
+  		<result property="mRegisterDate" 	column="M_REGISTER_DATE"/>
+  		<result property="memberStatus" 	column="MEMBER_STATUS"/>
+  		<result property="adminStatus" 		column="ADMIN_STATUS"/>
+  		<result property="memberManner"		column="MEMBER_MANNER"/>
+  		<result property="memberType"		column="MEMBER_TYPE"/>
+  		<result property="memberIntroduce"	column="MEMBER_INTRODUCE"/>
+  		<result property="memberAddress"	column="MEMBER_ADDRESS"/>
+  		<result property="recomendCount"	column="RECOMEND_COUNT"/>
+  	</resultMap>
+  	<resultMap type="AdminQna" id="adminQnaResultMap">
+		<id		column="QNA_NO" 				property="qnaNo"/>
+		<result column="PRODUCT_NO" 			property="productNo"/>
+		<result column="QNA_CODE" 				property="qnaCode"/>
+		<result column="QNA_TYPE" 				property="qnaType"/>
+		<result column="QNA_TITLE" 				property="qnaTitle"/>
+		<result column="QNA_CONTENTS" 			property="qnaContents"/>
+		<result column="Q_ENROLL_DATE" 			property="qEnrollDate"/>
+		<result column="A_ENROLL_DATE" 			property="aEnrollDate"/>
+		<result column="ANSWER_STATUS" 			property="answerStatus"/>
+		<result column="ANSWER_CONTENTS" 		property="answerContents"/>
+		<result column="SECRET_STATUS" 			property="secretStatus"/>
+		<result column="MEMBER_ID" 				property="memberId"/>
+		<result column="MEMBER_NICK"			property="memberNick"/>
+		<result column="REPORT_TYPE" 			property="reportType"/>
+		<result column="REPORT_NAME"			property="reportName"/>
+		<result column="CONTENTS_CODE" 			property="contentsCode"/>
+		<result column="CONTENTS_NAME"			property="contentsName"/>
 	</resultMap>
-	
-	<select id="selectLoginAdmin" resultMap="adminResultMap">
-		SELECT * FROM MEMBER_TBL
-		WHERE MEMBER_ID = #{adminId} AND MEMBER_PWD = #{adminPwd} AND ADMIN_STATUS = 'Y'
+	<resultMap type="AdminReport" id="adminReportResultMap">
+		<id property="reportNo" 			column="REPORT_NO"/>
+		<result property="contentsNo" 		column="CONTENTS_NO"/>
+		<result property="contentsCode" 	column="CONTENTS_CODE"/>
+		<result property="reportType" 		column="REPORT_TYPE"/>
+		<result property="reportMember" 	column="REPORT_MEMBER"/>
+		<result property="reportContents" 	column="REPORT_CONTENTS"/>
+		<result property="reportDate"		column="REPORT_DATE"/>
+		<result property="reportProcess" 	column="REPORT_PROCESS"/>
+		<result property="ContentsProcess" 	column="CONTENTS_PROCESS"/>
+		<result property="memberProcess" 	column="MEMBER_PROCESS"/>
+		<result property="memberId" 		column="MEMBER_ID"/>
+		<result property="memberNick" 		column="MEMBER_NICK"/>
+		<result property="reportMemberNick" column="REPORT_MEMBER_NICK"/>
+		<result property="joinReportType"		column="REPORT_TYPE"/>
+		<result property="joinReportName"		column="REPORT_NAME"/>
+		<result property="joinContentsCode" 	column="CONTENTS_CODE"/>
+		<result property="joinContentsName" 	column="CONTENTS_NAME"/>
+	</resultMap>
+  	<!-- 관리자 암호화된 비밀번호 조회 -->
+	<select id="selectAdminPwdById" resultType="String">
+		SELECT MEMBER_PWD FROM MEMBER_TBL
+		WHERE MEMBER_ID = #{memberId} AND ADMIN_STATUS = 'Y' AND MEMBER_STATUS = 'N'
 	</select>
+	<!-- 관리자 아이디 조회 -->
+	<select id="selectAdminById" resultMap="adminResultMap">
+  		SELECT * FROM MEMBER_TBL WHERE MEMBER_ID = #{memberId} AND MEMBER_STATUS = 'N' AND ADMIN_STATUS = 'Y'
+  	</select>
+  	
+  	<!-- 문의 -->
+  	<!-- 관리자 대시보드 총 문의 수 -->
+  	<select id="selectAllTotalQna" resultType="_int">
+  		SELECT COUNT(*) FROM QNA_TBL
+  	</select>
+  	<!-- 관리자 대시보드 총 미처리 문의 수 -->
+  	<select id="selectAllqnaCount" resultType="_int">
+  		SELECT COUNT(*) FROM QNA_TBL
+  		WHERE ANSWER_STATUS = 'N'
+  	</select>
+  	<!-- 관리자 대시보드 총 처리 문의 수 -->
+  	<select id="selectAllqnaAnswer" resultType="_int">
+  		SELECT COUNT(*) FROM QNA_TBL
+  		WHERE ANSWER_STATUS = 'Y'
+  	</select>
+  	<!-- 관리자 대시보드 오늘 처리 문의 수 -->
+  	<select id="selectTodayAnswer" resultType="_int">
+  		SELECT COUNT(*) FROM QNA_TBL
+  		WHERE ANSWER_STATUS = 'Y' AND TO_CHAR(SYSDATE, 'YYYY-MM-DD') = TO_CHAR(A_ENROLL_DATE, 'YYYY-MM-DD')
+  	</select>
+  	
+  	<!-- 신고 -->
+  	<!-- 관리자 대시보드 총 문의 수 -->
+  	<select id="selectAllTotalReport" resultType="_int">
+  		SELECT COUNT(*) FROM REPORT_TBL
+  	</select>
+  	<!-- 관리자 대시보드 총 미처리 문의 수 -->
+  	<select id="selectAllReportCount" resultType="_int">
+  		SELECT COUNT(*) FROM REPORT_TBL
+  		WHERE REPORT_PROCESS = 'N'
+  	</select>
+  	<!-- 관리자 대시보드 총 처리 문의 수 -->
+  	<select id="selectAllReportProcess" resultType="_int">
+  		SELECT COUNT(*) FROM REPORT_TBL
+  		WHERE REPORT_PROCESS = 'Y'
+  	</select>
+  	<!-- 관리자 대시보드 오늘 처리 문의 수 -->
+  	<select id="selectTodayProcess" resultType="_int">
+  		SELECT COUNT(*) FROM REPORT_TBL
+  		WHERE REPORT_PROCESS = 'Y' AND TO_CHAR(SYSDATE, 'YYYY-MM-DD') = TO_CHAR(REPORT_DATE, 'YYYY-MM-DD')
+  	</select>
 </mapper>

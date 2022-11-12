@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
 
 import org.json.simple.JSONObject;
@@ -29,14 +28,18 @@ import com.google.gson.Gson;
 import com.kh.strap.common.Paging;
 import com.kh.strap.common.Search;
 import com.kh.strap.member.domain.Member;
+import com.kh.strap.member.service.MemberService;
 import com.kh.strap.shop.cart.domain.Cart;
 import com.kh.strap.shop.cart.service.CartService;
+import com.kh.strap.shop.coupon.domain.Coupon;
+import com.kh.strap.shop.coupon.service.CouponService;
 import com.kh.strap.shop.product.domain.Order;
 import com.kh.strap.shop.product.domain.OrderProduct;
 import com.kh.strap.shop.product.domain.Product;
 import com.kh.strap.shop.product.domain.ProductImg;
 import com.kh.strap.shop.product.domain.ProductLike;
 import com.kh.strap.shop.product.service.ProductService;
+import com.kh.strap.shop.review.service.ReviewService;
 
 @Controller
 public class ProductController {
@@ -76,6 +79,12 @@ public class ProductController {
 	ProductService pService;
 	@Autowired
 	CartService cService;
+	@Autowired
+	CouponService couponService;
+	@Autowired
+	MemberService mService;
+	@Autowired
+	ReviewService rService;
 	
 	//쇼핑몰:보충제 리스트 출력
 	@RequestMapping(value="/product/listView.strap", method=RequestMethod.GET)
@@ -106,6 +115,9 @@ public class ProductController {
 		
 		session.setAttribute("forOrderProduct", productResult);
 		
+		Product productSession = (Product)session.getAttribute("forOrderProduct");
+		System.out.println("세션의 값"+productSession.toString());
+		
 		mv.addObject("product",productResult).
 		addObject("infoList",infoList).
 		addObject("subList",subList).
@@ -121,14 +133,19 @@ public class ProductController {
 			) {
 		//상세페이지에서 세션에 저장된 product값을 Cart List에 담아서 주문페이지로 전달
 		Product product = (Product)session.getAttribute("forOrderProduct");
+		System.out.println("세션의 상품" + product.toString());
 		List<Cart> cList = new ArrayList<>();
-		Cart cart = new Cart(product,qty);
+		Cart cart = new Cart(product, product.getProductNo(), qty);
 		cList.add(cart);
+		
+		Member loginUser = (Member)session.getAttribute("loginUser");
+		List<Coupon>couponList = couponService.printMemberCoupon(new Coupon(loginUser.getMemberId()));
+		
 		mv.addObject("cList",cList).
+		addObject("couponList",couponList).
 		setViewName("/shop/order");
 		return mv;
 	}
-	
 	//장바구니 -> 주문페이지 이동
 	@RequestMapping(value="/cart/orderView.strap", method=RequestMethod.GET)
 	public ModelAndView viewOrderPageFromCart(ModelAndView mv,
@@ -140,12 +157,16 @@ public class ProductController {
 		cList.stream().forEach(cart->{
 			cart.setProduct((pService.printOneProduct(new Product(cart.getProductNo()))));
 		});
+		
+		List<Coupon>couponList = couponService.printMemberCoupon(new Coupon(loginUser.getMemberId()));
+		
 		mv.addObject("cList",cList).
+		addObject("couponList",couponList).
 		setViewName("/shop/order");
 		return mv;
 	}
 	
-	//주문페이지->결제검증
+	//주문페이지->결제검증 , kh이니시스 결제 ajax응답 서버
 	@ResponseBody
 	@RequestMapping(value="/order/payment/completeCheck.strap",method=RequestMethod.POST)
 	public String orderProduct(
@@ -153,12 +174,21 @@ public class ProductController {
 			@RequestParam("merchant_uid")String merchant_uid, //주문번호
 			@RequestParam("paid_amount")Integer paid_amount, //결제금액
 			@RequestParam("status")String status, //주문상태
-			@ModelAttribute Order order){
+			@ModelAttribute Order order,
+			HttpSession session){
+		//멤버아이디 
+		Member loginUser = (Member)session.getAttribute("loginUser");
+		String memberId = loginUser.getMemberId();
+		
 		
 		//1.결제된 금액과 주문했던 금액을 비교한다.
 		if(paid_amount == pService.getTobePaidFinalCost(merchant_uid)) {
+				//쿠폰 사용 여부 update
+				if(order.getCouponNo() != -1) {
+					couponService.modifyMemberCoupon(order);
+				}
+			
 				//결제 검증 성공 시 결제 정보를 update한다.
-				
 				if(status.equals("paid")) {
 					//2-1. 결제상태가 'paid'라면 결제 성공처리
 					//ORDER_STATUS = paid , PAY_COMPLETE = Y , 결제 번호도 넣어야 하는데..
@@ -166,6 +196,15 @@ public class ProductController {
 					paidMap.put("merchant_uid", merchant_uid);
 					paidMap.put("imp_uid",imp_uid);
 					pService.modifyPayCompleteOrder(paidMap);
+					
+					System.out.println(merchant_uid);
+					//2-2. 리뷰작성권 insert
+					//1) 주문번호로 주문에 있는 상품 리스트를 가져온다. 반복중 실패하면 예외를 던져야하나?
+					List<Product> pList = pService.printProductsOnOrder(merchant_uid);
+					pList.stream().forEach(product ->{
+						System.out.println(product.getProductName());
+						rService.registerReviewPossible(product.getProductNo(), memberId);
+					});
 					return "success";
 					
 				}else if(status.equals("ready")) {
@@ -181,8 +220,6 @@ public class ProductController {
 			}else {
 			//결제금액과 결제되어야 할 금액이 다른경우. 결제금액 불일치, 위변조 결제
 				//화면단에서 결제 취소 처리한다.
-				
-				
 				return "forgery";
 		}
 	}
@@ -200,7 +237,7 @@ public class ProductController {
 			order.setOrderNo(orderNo);
 			if(pService.registerOrder(order)>0) {
 				//2.json배열을 자바의 List로 변경하고 이를 이용하여 DB에 INSERT한다.
-				//여기서 판매량을 집계하고 싶으나 결제 완료와는 동떨어져있다.
+				//여기서 판매량을 집계하고 싶으나 결제 완료와는 동떨어져있다. ->관리자에서 수동갱신
 				List<OrderProduct> opList =objectMapper.readValue(jsonArr, objectMapper.getTypeFactory().constructCollectionType(List.class, OrderProduct.class));
 				opList.stream().forEach(orderProduct ->{
 					pService.registerOrderProducts(orderProduct);
@@ -239,9 +276,14 @@ public class ProductController {
 	@ResponseBody
 	@RequestMapping(value="/member/modifyAddr.strap",method=RequestMethod.POST)
 	public String modifyMemberAddr(
-			@ModelAttribute Member member) {
-		//없으면 저장, 있으면 변경
+			@ModelAttribute Member member,
+			HttpSession session) {
 		if(pService.modifyMemberAddr(member) > 0) {
+			//세션 갱신.
+			Member loginUser = mService.memberById(member.getMemberId());
+			session.removeAttribute("loginUser");
+			session.setAttribute("loginUser", loginUser);
+			
 			return "success";
 		}else {
 			return "fail";

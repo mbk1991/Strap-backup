@@ -123,7 +123,7 @@
 						</div>
 					</div>
 					<div id="pInfo" class="col" style="text-align:center; item-align:center; padding:15px;">
-						<div id="pTitle" style="height:50px;">
+						<div id="pTitle" style="height:auto;">
 							<span id="pName" style="font-weight:bold; font-size:25px;">[${product.productBrand }] ${product.productName }</span>
 						</div>
 						<div id="star">
@@ -145,7 +145,7 @@
 							</div>
 							<div id="function" style="color:#c0c0c0;">
 								<span id="${product.productNo }" class="likeBtn" onclick="loginCheck('${loginUser.memberId}',function(){controlLike('${loginUser.memberId}',${product.productNo });});"><i class="fa-solid fa-heart"></i></span>
-								<i class="fa-solid fa-share-nodes"></i>
+								<span onclick="clip();"><i class="fa-solid fa-share-nodes"></i></span>
 							</div>
 						</div>
 						<hr>
@@ -228,6 +228,7 @@
 					<div id="reviewWrite-wrap" style="text-align:center; display:none;">
 						<form id="reviewForm" action="#" method="post">
 						보충제 상품은 어떠셨나요? 평점과 후기를 남겨보세요!
+						<div style="font-size:12px;">※상품 후기는 구매 건당 7일 이내 1회 작성 가능합니다.</div>
 							<div id="inputGrade">
 								<div id="inputStarGrade" style="font-weight:bold;font-size:30px;">
 									<span class="inputStars" onclick="addGrade(1);" onmouseover="effectStar(1);" onmouseout="effectStarEnd()" style="color:darkorange">★</span>
@@ -251,7 +252,7 @@
 								<input type="file" name="reviewImg" class="form-control" id="rImgFile">
 							</div>
 							<div id="rBtn">
-								<button type="button"  style="font-weight:bold;color:white;background-color:darkorange;border-style:none;border-radius:4px;height:40px;" onclick="registerReview();">후기 작성 완료</button>
+								<button type="button"  style="font-weight:bold;color:white;background-color:darkorange;border-style:none;border-radius:4px;height:40px;" onclick="if(contentsCheck('review')){registerReview();}else{alert('내용을 입력해주세요.')}">후기 작성 완료</button>
 							</div>
 						</form>
 					<hr>
@@ -307,7 +308,7 @@
 							<div id="qBtn" style="font-size:16px;">
 								 <label>
 									 <i class="fa-solid fa-lock"></i>비밀문의<input type="checkbox" name ="secretStatus" value = "Y">
-									<button type="button" style="font-weight:bold; margin-top:5px;color:white;background-color:darkorange;border-style:none;border-radius:4px;height:40px;" onclick="registerQna();">문의작성 완료</button>
+									<button type="button" style="font-weight:bold; margin-top:5px;color:white;background-color:darkorange;border-style:none;border-radius:4px;height:40px;" onclick="if(contentsCheck('qna')){registerQna();}else{alert('내용을 입력해주세요.')}">문의작성 완료</button>
 								 </label>
 							</div>
 						</form>
@@ -466,7 +467,10 @@ function registerReview(){
 			if(result == "success"){
 				printReview(1,'review_grade','desc');
 				document.querySelector("#reviewContents").value = "";
-			}else{
+			}else if(result =="noneAuthority"){
+				alert("상품 후기는 구매 건당 7일 이내 1회 작성 가능합니다.");
+			}else if (result =="fail"){
+				alert("후기 등록에 실패하였습니다.");
 			}
 		},
 		error:function(){}
@@ -828,12 +832,41 @@ function addCart(memberId,productNo,productAmount){
 	});
 }
 
-//주문페이지로 이동
-function toOrderPage(){
-	
-	
-	
+//리뷰 및 후기 컨텐츠 null체크
+//컨텐츠가 있는지 여부를 확인하고 boolean을 반환하는 함수.
+function contentsCheck(sort){
+	var existContents = false;
+	if(sort == "review"){
+		var reviewContents = document.querySelector("#reviewContents").value;
+		if(reviewContents != "" && reviewContents != null){
+			existContents=true;
+		}
+		
+	}else if(sort == "qna"){
+		var qnaContents = document.querySelector("#qnaContents").value;
+		if(qnaContents != "" && qnaContents != null){
+			existContents=true;
+		}
+	}
+	return existContents;
 }
+
+//url 복사 // 블로그 코드 복붙
+function clip(){
+
+        var url = '';    // <a>태그에서 호출한 함수인 clip 생성
+        var textarea = document.createElement("textarea");  
+        //url 변수 생성 후, textarea라는 변수에 textarea의 요소를 생성
+        
+        document.body.appendChild(textarea); //</body> 바로 위에 textarea를 추가(임시 공간이라 위치는 상관 없음)
+        url = window.document.location.href;  //url에는 현재 주소값을 넣어줌
+        textarea.value = url;  // textarea 값에 url를 넣어줌
+        textarea.select();  //textarea를 설정
+        document.execCommand("copy");   // 복사
+        document.body.removeChild(textarea); //extarea 요소를 없애줌
+        
+        alert("URL이 복사되었습니다. 공유를 원하는 곳에 붙여넣기 하세요.")  // 알림창
+   }
 
 
 </script>

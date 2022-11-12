@@ -263,10 +263,19 @@ public class ProductStoreLogic implements ProductStore {
 	public int deleteInfoImgOnProduct(SqlSession session, int productNo) {
 		return session.delete("ProductMapper.deleteInfoImgOnProduct",productNo);
 	}
+//상품 브랜드 정보 리스트 출력
+	@Override
+	public List<Product> getProductBrandList(SqlSession session) {
+		return session.selectList("ProductMapper.selectGetBrands");
+	}
+//상품명 정보 리스트 출력
+	@Override
+	public List<Product> getProductNameList(SqlSession session) {
+		return session.selectList("ProductMapper.selectGetNames");
+	}
 
-
-
-
-
-
+	@Override
+	public List<Product> selectGetTopProducts(SqlSession session) {
+		return session.selectList("ProductMapper.selectGetTopProducts");
+	}
 }

@@ -115,6 +115,7 @@
 						</table>
 					</div>
 				</div>
+				<input type="hidden" value="${completeOrder.couponNo }" id="orderCouponNo">
 				<div id="paid-info" class="col-5">
 					<div id="paidInfo" class="order-side" style="height:450px;margin:70px auto 30px;padding:20px 40px; border: 1px solid #c0c0c0;text-align:left;">
 						 <h4>결제 금액</h4><hr>
@@ -167,12 +168,10 @@
 		</div>
 	</div>
 <!-- 푸터 -->
-	<div id="footer" class="row">
-		<div class="col">
-			<jsp:include page="/WEB-INF/views/common/footer.jsp"></jsp:include>
-		</div>
-	</div>
 </div>
+	<div id="footer">
+			<jsp:include page="/WEB-INF/views/common/footer.jsp"></jsp:include>
+	</div>
 </body>
 <script>
 //결제수단 문자 변환
