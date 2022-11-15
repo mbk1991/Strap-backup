@@ -58,6 +58,40 @@
 	margin:10px;
 }
 
+#bTitle {
+	margin-top: 15px;
+	background-color: #F8F8F8;
+	border-bottom: 1px solid #ccc;
+	padding: 1rem !important;
+}
+
+#likeBtn-img {
+	color: blue;
+	font-size: 24px;
+}
+
+#likeBtn-count {
+	color: blue;
+	font-weight: bold;
+	margin-right: 10px;
+}
+
+#rank {
+	background: white;
+    text-align: center;
+    font-weight: bold;
+	width: 50px;
+	height: 48px;
+    float: left;
+    margin-right: 15px;
+    margin-top: 5px;
+    padding: 10px 15px;
+    border-radius: 25%;
+    box-shadow: 1px 1px 3px 3px #ccc;
+}
+
+div > span > a > p > img { display: none; }
+
 .pImg,.pBrandName:hover{
 	cursor:pointer;
 }
@@ -114,28 +148,39 @@
 			</div>
 		</div>
 		
-<!-- 베스트 서비스 후기		 -->
+		<!-- 베스트 서비스 후기 -->
 		<div id="popularComunityView" class="mainView">
-			<div id="cTitle" >Best매칭후기</div>
+			<div id="cTitle" style="margin-top: 35px;">Best매칭후기</div>
 			<div id="cWrap" class="row">
-				<div class="col oneView"></div>
-				<div class="col oneView"></div>
-				<div class="col oneView"></div>
+			<c:forEach items="${bList }" var="Board" varStatus="i">
+				<div class="col oneView">
+				<div class="position-relative">
+						<div id="rank">${i.count }</div>
+			    		<div id="bTitle">${Board.memberNick }</div>
+					<div class="position-absolute top-50 end-0 translate-middle-y" id="likeBtn-count">
+					<i class="fa-regular fa-thumbs-up" id="likeBtn-img"></i>
+						${Board.boardLikeIt } 
+					</div> 
+				</div>
+				<div style="margin-top: 15px;">
+					<span>
+						<a style="cursor:pointer;" href="/board/detail.strap?boardNo=${Board.boardNo }&page=${currentPage }">${Board.boardContents }</a>
+					</span>
+				</div>
+				</div>
+			</c:forEach>
 			</div>
 		</div>
 		
-		
-		
-		
-<!-- 베스트 상품 및 후기		 -->
+		<!-- 베스트 상품 및 후기 -->
 		<div id="popularProductReview" class="mainView" style="text-align:center;">
 			<div id="pTitle" >Best보충제</div>
 			<div id="pWrap" class="row">
 				<c:forEach items="${pList }" var="product" varStatus="n">
 				
 					<div class="col oneView" style="position:relative;padding:20x;">
-					<div class="marker" style="position:absolute;left:10px;top:10px;height:50px;width:50px;border-radius:10px;background-color:darkorange;">
-						<div style="width:90%; height:90%; margin:10px auto;text-align:center;font-size:20px;font-weight:bold;color:white;">${n.count }</div>
+					<div id="rank" style="position:absolute;left:10px;top:10px;">
+						${n.count }
 					</div>
 						<div class="bestProduct">
 							<div class="pImg">
