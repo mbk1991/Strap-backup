@@ -2,8 +2,10 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"  %>
+
 <html>
 <head>
+<link rel="icon" href="/resources/image/s.png">
 <title>스트랩 : 보충제</title>
 <!-- CDN -->
 <!-- 부트스트랩 -->
@@ -70,7 +72,7 @@
 					<div class="product-wrap row" style="text-align: center;align-items: center;padding:9px; border-bottom: 1px solid #c0c0c0;">
 						<div class="oneProduct col-1 number" style="font-weight:bold; font-size:20px;">${n.count + paging.offset }</div>
 						<div class="oneProduct col-2 thumb" onclick="location.href='/product/detailView.strap?productNo=${product.productNo}';">
-							<img class="thumb-img toProductDetail" src="${product.mainImgRoot }" onerror="this.src='';" width="100px" height="92px">
+							<img class="thumb-img toProductDetail" src="${product.mainImgRoot }" width="100px" height="92px">
 						</div>
 						<div class="oneProduct col info" style="width:70%;">
 							<div class="product-title toProductDetail" style="font-size:14px; font-weight:bold;" onclick="location.href='/product/detailView.strap?productNo=${product.productNo}';">
@@ -120,7 +122,7 @@
 		</div>
 	</div>
 	<!-- 푸터 -->
-	<div id="footer" class="row">
+	<div id="footer" class="row mt-auto">
 		<div class="col">
 			<jsp:include page="/WEB-INF/views/common/footer.jsp"></jsp:include>
 		</div>

@@ -6,7 +6,8 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<link rel="icon" href="/resources/image/s.png">
+<title>스트랩(관리자) : 회원관리</title>
 <style>
 	#memberListTable, #memberListTable tr, #memberListTable td {text-align: center;}
 	#memberListTable tr:hover {cursor: pointer;}

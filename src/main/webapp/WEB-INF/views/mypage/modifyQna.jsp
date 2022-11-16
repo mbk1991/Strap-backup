@@ -5,7 +5,8 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>STRAP MyPage</title>
+<link rel="icon" href="/resources/image/s.png">
+<title>스트랩 : 문의 수정</title>
 <!-- CDN -->
 <!-- 부트스트랩 -->
 <link rel="stylesheet"

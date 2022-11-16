@@ -6,7 +6,8 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Admin Strap Report</title>
+<link rel="icon" href="/resources/image/s.png">
+<title>스트랩(관리자) : 신고</title>
 <style>
 .ReportContents{
 	text-decoration:none;
@@ -41,7 +42,7 @@
 					<th width="100"><a class="ReportContents" href="/admin/adminReportListView.strap">신고 유형</a></th>
 					<th width="150">신고 종류</th>
 					<th>제목</th>
-					<th width="100">작성자</th>
+					<th width="130">신고자</th>
 					<th width="150">작성일</th>
 					<th width="100">처리 상태</th>
 				</tr>
@@ -57,14 +58,14 @@
 							<td><div style="background-color:#D5D5D5; border-radius:5px;"><a class="ReportContents" href="/admin/adminReportSort.strap?contentsCode=RC2&searchCondition=${searchCondition}&searchValue=${searchValue}" ><b>${report.contentsName }</b></a></div></td>
 							<td>${report.reportName }</td>
 						</c:if>
-						<td class="text-truncate" style="max-width: 300px;"><a class="ReportContents" href="/admin/adminReportDetailView.strap?ReportNo=${report.reportNo }&page=${currentPage }">${report.reportContents }</a></td>
+						<td class="text-truncate" style="max-width: 300px;"><a class="ReportContents" href="/admin/adminReportDetailView.strap?reportNo=${report.reportNo }&page=${currentPage }&contentsProcess=${report.contentsProcess }&memberProcess=${report.memberProcess }">${report.reportContents }</a></td>
 						<td>${report.memberNick }</td>
 						<td><fmt:formatDate pattern="yyyy-MM-dd" value="${report.reportDate }"/> </td>
 						
-						<c:if test="${report.reportProcess eq 'Y' }">
+						<c:if test="${report.contentsProcess eq 'N' }">
 							<td>미처리</td>
 						</c:if>
-						<c:if test="${report.reportProcess eq 'N' }">
+						<c:if test="${report.contentsProcess eq 'Y' }">
 							<td>처리</td>
 						</c:if>
 					</tr>
@@ -109,12 +110,12 @@
 								<div style="display:inline-block;">
 									<select name="searchCondition" class="btn btn-dark">
 										<option value="all" <c:if test="${searchCondition eq 'all' }">selected</c:if>>전체</option>
-										<option value="reportMember" <c:if test="${searchCondition eq 'reportMember' }">selected</c:if>>신고당한 회원</option>
+										<option value="reportMember" <c:if test="${searchCondition eq 'reportMember' }">selected</c:if>>신고자</option>
 										<option value="contents" <c:if test="${searchCondition eq 'contents' }">selected</c:if>>내용</option>
 									</select>
 								</div>
 								<div style="display:inline-block;">
-									<input style="width:300px; height:33px;" type="text" name="searchValue" value="${searchValue}">
+									<input class="form-control" style="width:300px;;" type="text" name="searchValue" value="${searchValue}">
 								</div>	
 								<div style="display:inline-block;">
 									<input type="submit" value="검색" class="btn btn-dark">

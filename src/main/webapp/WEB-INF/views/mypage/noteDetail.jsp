@@ -5,8 +5,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="icon" href="/resources/image/s.png">
 <meta charset="UTF-8">
-<title>Note</title>
+<title>스트랩 : 쪽지</title>
 <!-- CDN -->
 <!-- 부트스트랩 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" />
@@ -78,7 +79,7 @@
 		</div>
 		<div class="row">
 			<div class="col">
-				보낸 시간 : <fmt:formatDate pattern="yyyy-MM-dd / hh:mm:ss" value="${noteBox.senderTime }"/>
+				보낸 시간 : <fmt:formatDate pattern="yyyy-MM-dd" value="${noteBox.senderTime }"/>
 			</div>
 		</div>
 		<hr>
@@ -88,7 +89,7 @@
 				<div id="profile">
 					<div class="row" id="info">
 						<div class="col-5" id="info-img">
-							<div class="imgDiv">
+							<div class="imgDiv" style="height: 300px; margin-top: 10px;">
 							<c:if test="${empty member.mProfilePath }">
 								<img id="profileImg" width="100%" height="100%" style="margin:10px;border-radius:30px;" src="/resources/profileUploadFiles/default.png">
 							</c:if>
@@ -120,8 +121,8 @@
 								<tr>
 									<th>마이짐</th>
 									<td>
-										<input class="profile-input" type="text" id="jymAddress" name="jymAddress" style="width: 250px;border:0;" value="${member.memberJym}"  readonly><br>
-										<input class="profile-input" type="text" id="jymTitle" name="jymTitle" style="width: 250px;border:0;" readonly>	
+										<input class="profile-input" type="text" id="jymAddress" name="jymAddress" style="width: 250px;border:0;" value="${jymAddress}"  readonly><br>
+										<input class="profile-input" type="text" id="jymTitle" name="jymTitle" style="width: 250px;border:0;" value="${jymTitle}" readonly>	
 									</td>
 								</tr>
 								<tr>
@@ -154,7 +155,7 @@
 			<div class="row text-center" id="chat-window" style="display:none;">
 				<div class="col">
 					<span id="chat-column">
-						
+						<!-- 문자 대화 공간 -->
 					</span>
 				</div>
 			</div>
@@ -164,7 +165,7 @@
 					<div class="row">
 						<div class="col">
 							<input class="form-control" type="text" id="chat-contents" required>
-							<button class="btn btn-dark" id="chat-btn">입력</button>
+							<button class="btn btn-dark" id="chat-btn" type="button">입력</button>
 						</div>
 					</div>
 					<br>
@@ -197,7 +198,7 @@
 					<div class="row">
 						<div class="col">
 						</div>
-						<div class="col-auto">
+						<div class="col-10">
 							<input class="form-control" type="text" id="chat-contents" required>
 						</div>
 						<div class="col-auto">
@@ -207,7 +208,6 @@
 						</div>
 					</div>
 					<hr>
-					<c:if test="${noteBox.recipientId eq memberId }"> 
 						<div class="row">
 							<div class="col" align="center">
 								<h6>날짜 :</h6> 
@@ -217,33 +217,13 @@
 								시간 : <input class="timepicker" id="meet-time" required/>
 							</div>
 							<div class="col" align="center">
-								메모 : <input type="text" id="meet-memo"  placeholder="ex)헬스장, 운동부위" required/>
+								메모 : <input type="text" id="meet-memo"  maxlength="15" placeholder="ex)헬스장, 운동부위" required/>
 							</div>
 						</div>
-					</c:if>
-					<c:if test="${noteBox.recipientId ne memberId }"> 
-						<div class="row" style="display:none;">
-							<div class="col-auto" align="center">
-								<h6>날짜 :</h6> 
-								<input type="date" id="meet-date" required/>
-							</div>
-							<div class="col-auto" align="center">
-								시간 : <input class="timepicker" id="meet-time" required/>
-							</div>
-							<div class="col-auto" align="center">
-								메모 : <input type="text" id="meet-memo"  placeholder="ex)헬스장, 운동부위" required/>
-							</div>
-						</div>
-					</c:if>
 					<br>
 					<div class="row">
 						<div class="col" align="right" >
-							<c:if test="${noteBox.recipientId eq memberId }"> 
-								<button class="btn btn-dark" onclick="matchSchedule();">일정잡기</button>
-							</c:if>
-							<c:if test="${noteBox.recipientId ne memberId }"> 
-								<button class="btn btn-dark" disabled>일정잡기</button>
-							</c:if>
+							<button class="btn btn-dark" onclick="matchSchedule();">일정잡기</button>
 						</div>
 						<div class="col" align="left">
 							<button class="btn btn-dark" onclick="window.close();">닫기</button>
@@ -303,6 +283,13 @@
 		</div>
 	</div>
 	<script>
+	//부모창 쪽지 개수 리셋
+	count = '${count}';
+	if(count > 0){
+		opener.document.querySelector("#noteMarker").innerText = count;
+	}else if(count == 0){
+		opener.document.querySelector("#noteMarker").style.display = "none";
+	}
 	
 	$('.timepicker').timepicker({
 	    timeFormat: 'HH:mm',
@@ -366,7 +353,7 @@
 				success:function(data){
 					if(window.confirm("정말로 신고하시겠습니까?")){
 						location.replace("/mypage/noteBoxListView.strap");
-						window.close();
+						alert("신고 완료");
 					} else {
 						$('#reportNote').modal('hide');
 					}
@@ -396,7 +383,61 @@
 		});
 		
 		// 쪽지 입력 ajax
-		$("#chat-btn").on("click",function(){
+// 		$("#chat-btn").on("click",function(){
+// 			var cContents = $("#chat-contents");
+// 			if('${memberId }' == '${noteBox.senderId }'){
+// 				var senderNick = '${noteBox.senderNick }';
+// 			} else {
+// 				var senderNick = '${noteBox.recipientNick }';
+// 			}
+// 			console.log(senderNick);
+// 			$.ajax({
+// 				url : "/notebox/registerChat.strap",
+// 				data : {
+// 					"noteNo":'${noteBox.noteNo }',
+// 					"senderId":'${noteBox.senderId }',
+// 					"senderNick":senderNick,
+// 					"chatContents" : cContents.val()},
+// 				type : "get",
+// 				success:function(data){
+// 					console.log(data);
+// 					cContents.val("");
+// 					location.reload(true);
+// 				},error:function(){
+// 				}
+// 			});
+// 		});
+		
+		
+		var input = $('#chat-contents');
+		input.on('keyup',function(e){
+		    if (e.keyCode === 13) {
+		    	var cContents = $("#chat-contents");
+				if('${memberId }' == '${noteBox.senderId }'){
+					var senderNick = '${noteBox.senderNick }';
+				} else {
+					var senderNick = '${noteBox.recipientNick }';
+				}
+				console.log(senderNick);
+				$.ajax({
+					url : "/notebox/registerChat.strap",
+					data : {
+						"noteNo":'${noteBox.noteNo }',
+						"senderId":'${noteBox.senderId }',
+						"senderNick":senderNick,
+						"chatContents" : cContents.val()},
+					type : "get",
+					success:function(data){
+						console.log(data);
+						cContents.val("");
+						location.reload(true);
+					},error:function(){
+					}
+				});
+		  }  
+		});
+		var btn = $('#chat-btn');
+		btn.on('click',function(){
 			var cContents = $("#chat-contents");
 			if('${memberId }' == '${noteBox.senderId }'){
 				var senderNick = '${noteBox.senderNick }';
@@ -414,14 +455,14 @@
 				type : "get",
 				success:function(data){
 					console.log(data);
-// 					alert("쪽지 입력 성공");
 					cContents.val("");
 					location.reload(true);
 				},error:function(){
-// 					alert("쪽지 실패");
 				}
 			});
 		});
+		
+		
 		
 		var now_utc = Date.now() // 지금 날짜를 밀리초로
 		//getTimezoneOffset()은 현재 시간과의 차이를 분 단위로 반환
@@ -472,7 +513,7 @@
 	
 	
 	function noteBoxBack(){
-		history.back();
+		location.href="/mypage/noteBoxListView.strap";
 	}
 	
 	

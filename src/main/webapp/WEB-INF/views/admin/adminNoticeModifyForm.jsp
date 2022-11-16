@@ -5,7 +5,8 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>공지사항 수정</title>
+<link rel="icon" href="/resources/image/s.png">
+<title>스트랩(관리자) : 공지사항 수정</title>
 
 </head>
 <body>

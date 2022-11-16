@@ -4,7 +4,8 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Admin Notice Write</title>
+<link rel="icon" href="/resources/image/s.png">
+<title>스트랩(관리자) : 공지사항 등록</title>
 <style>
 input{
 

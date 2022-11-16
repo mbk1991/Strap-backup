@@ -4,6 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"  %>
 <html>
 <head>
+<link rel="icon" href="/resources/image/s.png">
 <title>스트랩 : 상품상세정보</title>
 <!-- CDN -->
 <!-- 부트스트랩 -->
@@ -324,7 +325,7 @@
 		</div>
 	</div>
 <!-- 푸터 -->
-	<div id="footer" class="row">
+	<div id="footer" class="row mt-auto">
 		<div class="col">
 			<jsp:include page="/WEB-INF/views/common/footer.jsp"></jsp:include>
 		</div>
@@ -375,7 +376,7 @@ $(document).ready(function(){
       var hash = this.hash;
       $('html, body').animate({
         scrollTop: $(hash).offset().top
-      }, 800, function(){
+      }, 200, function(){
         window.location.hash = hash;
       });
     } 

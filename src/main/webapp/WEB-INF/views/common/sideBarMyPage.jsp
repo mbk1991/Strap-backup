@@ -4,6 +4,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="icon" href="resources/image/s.png">
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <style>
@@ -14,6 +15,11 @@
 ul{
 	font-size:16px
 }
+
+.list-group li:hover{
+ cursor:pointer;
+}
+
 </style>
 </head>
 <body>

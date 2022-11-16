@@ -5,7 +5,8 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Strap Admin Login</title>
+<link rel="icon" href="/resources/image/s.png">
+<title>스트랩(관리자) : 로그인</title>
 <link href="/resources/css/adminLogin.css" rel="stylesheet">
 <script src="/resources/js/jquery-3.6.1.min.js"></script>
 <!-- 합쳐지고 최소화된 최신 CSS -->

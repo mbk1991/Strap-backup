@@ -23,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.kh.strap.admin.domain.Admin;
 import com.kh.strap.admin.domain.Notice;
 import com.kh.strap.admin.service.NoticeService;
+import com.kh.strap.member.domain.Member;
 
 @Controller
 public class NoticeController {
@@ -37,34 +38,40 @@ public class NoticeController {
 	 */
 	// 관리자 공지사항 리스트
 	@RequestMapping(value="/admin/noticeListView.strap", method=RequestMethod.GET)
-	public ModelAndView showAdminNoticeList(ModelAndView mv
-			,@RequestParam(value="page", required=false) Integer page
+	public String showAdminNoticeList(@RequestParam(value="page", required=false) Integer page
 			, HttpServletRequest request) {
-		int currentPage = (page != null) ? page : 1;
-		int totalCount = nService.getTotalCount("","");
-		int noticeLimit = 10;
-		int naviLimit = 5;
-		int maxPage;
-		int startNavi;
-		int endNavi;
-		maxPage = (int)((double)totalCount/noticeLimit + 0.9);
-		startNavi = ((int)((double)currentPage/naviLimit+0.9)-1)*naviLimit+1;
-		endNavi = startNavi + naviLimit - 1;
-		if(maxPage < endNavi) {
-			endNavi = maxPage;
+		HttpSession session = request.getSession();
+		Member member = (Member)session.getAttribute("loginUser");
+		if(member != null) {
+			int currentPage = (page != null) ? page : 1;
+			int totalCount = nService.getTotalCount("","");
+			int noticeLimit = 10;
+			int naviLimit = 5;
+			int maxPage;
+			int startNavi;
+			int endNavi;
+			maxPage = (int)((double)totalCount/noticeLimit + 0.9);
+			startNavi = ((int)((double)currentPage/naviLimit+0.9)-1)*naviLimit+1;
+			endNavi = startNavi + naviLimit - 1;
+			if(maxPage < endNavi) {
+				endNavi = maxPage;
+			}
+			List<Notice> nList = nService.printNoticeList(currentPage, noticeLimit);
+			if(!nList.isEmpty()) {
+				request.setAttribute("urlVal", "noticeListView");
+				request.setAttribute("maxPage", maxPage);
+				request.setAttribute("currentPage", currentPage);
+				request.setAttribute("noticeLimit", noticeLimit);
+				request.setAttribute("startNavi", startNavi);
+				request.setAttribute("endNavi", endNavi);
+				request.setAttribute("nList", nList);
+			}
+			return("admin/adminNoticeList");
+		} else {
+			request.setAttribute("msg", "로그인후 이용 가능한 서비스입니다.");
+			request.setAttribute("url", "/admin/loginView.strap");
+			return("common/alert");
 		}
-		List<Notice> nList = nService.printNoticeList(currentPage, noticeLimit);
-		if(!nList.isEmpty()) {
-			mv.addObject("urlVal", "noticeListView");
-			mv.addObject("maxPage", maxPage);
-			mv.addObject("currentPage", currentPage);
-			mv.addObject("noticeLimit", noticeLimit);
-			mv.addObject("startNavi", startNavi);
-			mv.addObject("endNavi", endNavi);
-			mv.addObject("nList", nList);
-		}
-		mv.setViewName("admin/adminNoticeList");
-		return mv;
 	}
 	
 	/**
@@ -93,9 +100,9 @@ public class NoticeController {
 			, @RequestParam(value="uploadFile", required=false) MultipartFile uploadFile
 			, HttpServletRequest request) {
 		HttpSession session = request.getSession();
-		Admin admin = (Admin)session.getAttribute("loginUser");
-		String adminName = admin.getAdminName();
-		notice.setNoticeWriter(adminName);
+		Member member = (Member)session.getAttribute("loginUser");
+		String memberName = member.getMemberNick();
+		notice.setNoticeWriter(memberName);
 		try {
 			String noticeFilename = uploadFile.getOriginalFilename();
 			if(!noticeFilename.equals("")) {

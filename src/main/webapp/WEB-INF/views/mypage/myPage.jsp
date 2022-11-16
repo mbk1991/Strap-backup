@@ -5,7 +5,8 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>STRAP MyPage</title>
+<link rel="icon" href="/resources/image/s.png">
+<title>스트랩 : 나의 활동</title>
 <!-- CDN -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"/>
 <!-- 부트스트랩 -->
@@ -72,7 +73,7 @@
 								</tr>
 								<tr>
 									<th>자기소개</th>
-									<td><textarea id="memberIntroduce" readonly>${loginUser.memberIntroduce }</textarea></td>
+									<td><textarea id="memberIntroduce" readonly></textarea></td>
 								</tr>
 							</table>
 							<br>
@@ -180,6 +181,10 @@
 	</div>
 </div>
 <script>
+	var memberIntroduce = '${loginUser.memberIntroduce }';
+	memberIntroduce = memberIntroduce.replace(/<br>/g,'\n');
+	$("#memberIntroduce").val(memberIntroduce);
+	
 	var surveyAnswer;
 	function survey(obj){
 		surveyAnswer = $(obj).text();
@@ -211,7 +216,6 @@
 				type:"post",
 				data:{"matchNo":matchNo,"surveyAnswer":surveyAnswer, "surveyOpinion":surveyOpinion, "mathMemberId":mathMemberId, "matchCase":matchCase},
 				success:function(result){
-					console.log(result);
 					if(result == "ok"){
 						alert("소중한 의견 감사합니다");
 						location.reload();
@@ -257,7 +261,6 @@
 					
 			},
 			error:function(result){
-				console.log("실패:"+result);
 			}
 		})
 	}
@@ -288,8 +291,6 @@
 						start();
 					},
 					error:function(result){
-						console.log(result)
-						console.log("실패");
 					}
 				})
 			}

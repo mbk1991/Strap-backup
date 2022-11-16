@@ -16,12 +16,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   		<result property="boardLikeIt" 		column="BOARD_LIKEIT"/>
   		<result property="fix" 				column="FIX"/>
   		<result property="memberId" 		column="MEMBER_ID"/>
+  		<result property="boardUpdateDate" 	column="BOARD_UPDATE_DATE"/>
   	</resultMap>
   	
   	<!-- 게시글 등록 -->
   	<insert id="insertBoard">
   		INSERT INTO BOARD_TBL 
-  		VALUES(SEQ_BOARDNO.NEXTVAL,#{memberNick},#{boardTitle},#{boardContents},#{boardCategory},DEFAULT,DEFAULT,DEFAULT,DEFAULT,#{memberId})
+  		VALUES(SEQ_BOARDNO.NEXTVAL,#{memberNick},#{boardTitle},#{boardContents},#{boardCategory},DEFAULT,DEFAULT,DEFAULT,DEFAULT,#{memberId},#{boardUpdateDate})
   	</insert>
 
 	<!-- 게시글 추천 시 Like 테이블에 insert -->
@@ -38,7 +39,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   	<!-- 자유 게시글 SELECT -->
   	<select id="selectFreeBoard" resultMap="boardResultMap">
   		SELECT BOARD_NO,MEMBER_NICK,BOARD_TITLE,BOARD_CONTENTS,BOARD_CATEGORY,BOARD_DATE,BOARD_COUNT,BOARD_LIKEIT
-		FROM BOARD_TBL WHERE BOARD_CATEGORY='자유글' ORDER BY FIX DESC, BOARD_DATE DESC
+		FROM BOARD_TBL WHERE BOARD_CATEGORY='자유글' ORDER BY FIX DESC, BOARD_DATE DESC 
   	</select>
   	
   	<!-- 후기 게시글 SELECT -->
@@ -69,10 +70,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<!-- 자유 게시글 수 return -->
   	<select id="selectFreeTotalCount" resultType="_int">
-  		SELECT COUNT(*) FROM BOARD_TBL WHERE BOARD_CATEGORY='자유글'
+ 		SELECT COUNT(*) FROM BOARD_TBL WHERE BOARD_CATEGORY='자유글'
 		<where>
 			<if test="searchCondition.toString() == 'all'">
-				BOARD_TITLE LIKE '%'||UPPER(#{searchValue})||'%' OR BOARD_CONTENTS LIKE '%'||UPPER(#{searchValue})||'%' OR MEMBER_NICK LIKE '%'||UPPER(#{searchValue})||'%'	
+				BOARD_TITLE LIKE '%'||UPPER(#{searchValue})||'%' OR 
+				BOARD_CONTENTS LIKE '%'||UPPER(#{searchValue})||'%' OR 
+				MEMBER_NICK LIKE '%'||UPPER(#{searchValue})||'%'
 			</if>
 			<if test="searchCondition.toString() == 'title'">
 				BOARD_TITLE LIKE '%'||UPPER(#{searchValue})||'%'

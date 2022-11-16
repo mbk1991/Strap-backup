@@ -4,6 +4,7 @@
 
 <html>
 <head>
+<link rel="icon" href="/resources/image/s.png">
 <title>스트랩 : 나의문의</title>
 <!-- CDN -->
 <!-- 부트스트랩 -->
@@ -92,7 +93,7 @@ input:disabled {
 					</div>
 				</div>
 				<div id="qnaList">
-					<table style="text-align:center; font-size:14px;">
+					<table style="text-align:center; font-size:14px; width: 100%">
 						<tr style="height:30px; border-bottom:1px solid #c0c0c0;">
 							<th class="col-1">문의번호</th>
 							<th class="col-3" >상품정보</th>

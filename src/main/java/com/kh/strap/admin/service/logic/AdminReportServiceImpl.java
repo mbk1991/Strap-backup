@@ -20,24 +20,31 @@ public class AdminReportServiceImpl implements AdminReportService{
 	
 	@Override
 	public List<AdminReport> printAllAdminReportList(int currentPage, int noticeLimit) {
-		List<AdminReport> aqList = arStore.selectAllAdminReportList(session, currentPage, noticeLimit);
-		return aqList;
+		List<AdminReport> arList = arStore.selectAllAdminReportList(session, currentPage, noticeLimit);
+		return arList;
 	}
 
 
 	@Override
 	public List<AdminReport> printAllByValue(String searchCondition, String searchValue, int currentPage,
-			int ReportLimit) {
-		List<AdminReport> aqList = arStore.selectAllByValue(session, searchCondition, searchValue, currentPage, ReportLimit);
-		return aqList;
+			int reportLimit) {
+		List<AdminReport> arList = arStore.selectAllByValue(session, searchCondition, searchValue, currentPage, reportLimit);
+		return arList;
 	}
 
 
 	@Override
 	public List<AdminReport> printAllBySort(String sortCondition, String sortValue, String contentsCode, int currentPage,
-			int ReportSortLimit) {
-		List<AdminReport> aqList = arStore.selectAllBySort(session, sortCondition, sortValue, contentsCode, currentPage, ReportSortLimit);
-		return aqList;
+			int reportSortLimit) {
+		List<AdminReport> arList = arStore.selectAllBySort(session, sortCondition, sortValue, contentsCode, currentPage, reportSortLimit);
+		return arList;
+	}
+
+
+	@Override
+	public List<AdminReport> printAllByUnsolvedReport(int currentPage, int unsolvedQnaLimit) {
+		List<AdminReport> arList = arStore.selectAllByUnsolvedReport(session, currentPage, unsolvedQnaLimit);
+		return arList;
 	}
 
 
@@ -49,8 +56,22 @@ public class AdminReportServiceImpl implements AdminReportService{
 
 
 	@Override
-	public AdminReport printOneByNo(Integer ReportNo) {
-		AdminReport adminReport = arStore.selectOneByNo(session, ReportNo);
+	public int registReportProcess(AdminReport adminReport) {
+		int result = arStore.updateReportProcess(session, adminReport);
+		return result;
+	}
+
+
+	@Override
+	public int printAllReportCount(String searchCondition, String searchValue) {
+		int result = arStore.selectAllReportCount(session, searchCondition, searchValue);
+		return result;
+	}
+
+
+	@Override
+	public AdminReport printOneByNo(Integer reportNo) {
+		AdminReport adminReport = arStore.selectOneByNo(session, reportNo);
 		return adminReport;
 	}
 

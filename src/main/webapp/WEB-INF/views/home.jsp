@@ -4,8 +4,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"  %>
 <html>
 <head>
+<link rel="icon" href="/resources/image/s.png">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>STRAP MAIN</title>
+<title>스트랩</title>
 <!-- CDN -->
 <!-- 부트스트랩 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" />
@@ -18,17 +19,17 @@
 .carousel-inner >.carousel-item >img {
    top: 0;
    left: 0;
-   height: 220px;
+   height: 300px;
    min-width: 100%;
-   min-height: 220px;
+   min-height: 300px;
 }
 
 .carousel-inner img{
    top: 0;
    left: 0;
-   height: 220px;
+   height: 300px;
    min-width: 100%;
-   min-height: 220px;
+   min-height: 300px;
 }
 .mainView{
 	margin-bottom:20px;
@@ -84,7 +85,7 @@
 	height: 48px;
     float: left;
     margin-right: 15px;
-    margin-top: 5px;
+    transform: translate(-12px, -10px);
     padding: 10px 15px;
     border-radius: 25%;
     box-shadow: 1px 1px 3px 3px #ccc;
@@ -109,6 +110,7 @@ div > span > a > p > img { display: none; }
    </div>
 <!-- 컨텐츠 -->
 	<div id="contents" class="contents row">
+		<!-- 캐러셀 -->
 		<div class="contents-side col">
 			<div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
 				<div class="carousel-indicators">
@@ -154,19 +156,20 @@ div > span > a > p > img { display: none; }
 			<div id="cWrap" class="row">
 			<c:forEach items="${bList }" var="Board" varStatus="i">
 				<div class="col oneView">
-				<div class="position-relative">
-						<div id="rank">${i.count }</div>
-			    		<div id="bTitle">${Board.memberNick }</div>
-					<div class="position-absolute top-50 end-0 translate-middle-y" id="likeBtn-count">
-					<i class="fa-regular fa-thumbs-up" id="likeBtn-img"></i>
-						${Board.boardLikeIt } 
-					</div> 
-				</div>
-				<div style="margin-top: 15px;">
-					<span>
-						<a style="cursor:pointer;" href="/board/detail.strap?boardNo=${Board.boardNo }&page=${currentPage }">${Board.boardContents }</a>
-					</span>
-				</div>
+					<div class="position-relative" id="bTitle">
+							<div id="rank">${i.count }</div>
+				    		<div style="width: 187px; overflow: hidden; text-overflow: ellipsis; 
+				    		 transform: translate(-16px, 1px); white-space: nowrap;">${Board.boardTitle }</div>
+						<div class="position-absolute top-50 end-0 translate-middle-y" id="likeBtn-count"> 
+						<i class="fa-regular fa-thumbs-up" id="likeBtn-img"></i>
+							${Board.boardLikeIt }
+						</div>
+					</div>
+					<div style="margin-top: 15px;">
+						<span>
+							<a style="cursor:pointer; display: block; height: 75%;" href="/board/detail.strap?boardNo=${Board.boardNo }&page=${currentPage }">${Board.boardContents }</a>
+						</span>
+					</div>
 				</div>
 			</c:forEach>
 			</div>
@@ -179,14 +182,14 @@ div > span > a > p > img { display: none; }
 				<c:forEach items="${pList }" var="product" varStatus="n">
 				
 					<div class="col oneView" style="position:relative;padding:20x;">
-					<div id="rank" style="position:absolute;left:10px;top:10px;">
+					<div id="rank" style="position:absolute;left:22px;top:25px;">
 						${n.count }
 					</div>
 						<div class="bestProduct">
 							<div class="pImg">
 								<img src="${product.mainImgRoot }" width="80%" height="60%" style="margin:auto;display:block;padding:12px;" onclick="location.href='/product/detailView.strap?productNo=${product.productNo}';">
 							</div>
-								<div class="pBrandName" style="font-weight:bold;" onclick="location.href='/product/detailView.strap?productNo=${product.productNo}';">
+								<div class="pBrandName" style="font-weight:bold; height:40px;" onclick="location.href='/product/detailView.strap?productNo=${product.productNo}';">
 									<span class="brand">
 										[${product.productBrand }]
 									</span>
@@ -206,7 +209,7 @@ div > span > a > p > img { display: none; }
 						</div>
 						<hr>
 						<div class="bestReview">
-							<div class="rContents">
+							<div class="rContents" style="height:25px;">
 							 	<span>${product.review.reviewContents }</span>
 							 </div>
 							<div class="rInfo">

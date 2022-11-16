@@ -5,8 +5,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="icon" href="/resources/image/s.png">
 	<meta charset="UTF-8">
-	<title>Admin Qna Detail</title>
+	<title>스트랩(관리자) : 문의 상세페이지</title>
 </head>
 <body>
 	<jsp:include page="/WEB-INF/views/common/adminHeader.jsp"></jsp:include>
@@ -105,7 +106,7 @@
 					</div>
 				</div>
 			</c:if>
-			
+			<br><br><br>
 	</div>
 	<script>
 		function textareaAble(thisBtn){

@@ -5,6 +5,7 @@
 
 <html>
 <head>
+<link rel="icon" href="/resources/image/s.png">
 <title>스트랩 : 주문내역</title>
 <!-- CDN -->
 <!-- 부트스트랩 -->
@@ -37,6 +38,11 @@ input:disabled {
  .pagination a{
  	color:#c0c0c0;
  	border-style:none;
+ 	
+ 
+ }
+ .pImg:hover{
+ 	cursor:pointer;
  }
 
 </style>
@@ -96,7 +102,7 @@ input:disabled {
 								<c:forEach items="${order.buyProducts }" var="product" varStatus="n" >
 									<div class="oneCart row" style="margin: 0px auto; border-bottom:1px solid #c0c0c0; padding:9px;">
 										<div class="pImg col-3" style="text-align:center;margin:auto;">
-											<img src="${product.mainImgRoot }" style="width:80px;height:70px;">
+											<img src="${product.mainImgRoot }" onclick="location.href='/product/detailView.strap?productNo=${product.productNo}';" style="width:80px;height:70px;">
 										</div>
 										<div class="cartInfo col-6" style="text-align:left;">
 											<div class="pName" style="margin:auto;padding:5px 0px;font-size:14px;font-weight:bold;">
